@@ -1,6 +1,6 @@
 # gitlump [![Build Status](https://travis-ci.org/nabeix/gitlump.svg?branch=master)](https://travis-ci.org/nabeix/gitlump)
 
-A command line tool to manage all repositories of GitHub/Github Enterprise user or organization.
+A command line tool to manage all repositories of GitHub user or organization.
 
 ***This project is WIP.***
 
@@ -43,7 +43,8 @@ gitlump init
   "name": "nabeix",
   "defaultProtocol": "ssh",
   "repos": [],
-  "ignore": []
+  "ignore": [],
+  "cloned": []
 }
 ```
 
@@ -55,8 +56,11 @@ gitlump init
 * `name` Github user or organization name
 * `defaultProtocol` [ssh|https|svn] (default ssh)
 * `repos` A list of repository specific settings (default blank)
-  * If use non-default protocol: `"repos": [{"name": "repo-name", "protocol": "https"}]`
+  * `name` repository name
+  * `protocol` used instead of `defaultProtocol`
+  * `directory` clone directory name
 * `ignore` A list of repository names to be ignored (default blank)
+* `cloned` A list of cloned repository names (updated automatically by `gitlump clone`)
 
 ### Clone
 
@@ -78,7 +82,7 @@ gitlump pull
 
 ### Other Git commands
 
-All git commands are available after `gitlump exec`.
+Almost all git commands are available after `gitlump exec`.
 
 The followings are examples:
 
