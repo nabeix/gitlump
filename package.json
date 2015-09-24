@@ -16,6 +16,8 @@
     "tsd": "^0.6.4"
   },
   "dependencies": {
+    "ansicolors": "^0.3.2",
+    "async": "^1.4.2",
     "commander": "^2.8.1"
   }
 }

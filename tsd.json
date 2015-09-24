@@ -1,15 +1,21 @@
 {
   "version": "v4",
-  "repo": "borisyankov/DefinitelyTyped",
-  "ref": "master",
+  "repo": "nabeix/DefinitelyTyped",
+  "ref": "commander",
   "path": "typings",
   "bundle": "typings/tsd.d.ts",
   "installed": {
     "commander/commander.d.ts": {
-      "commit": "32029fcb4e1a3ef8968711b545d77b584435729d"
+      "commit": "e29d691d41dca6626171ee7282b0bdaeb15d38b3"
     },
     "node/node.d.ts": {
-      "commit": "32029fcb4e1a3ef8968711b545d77b584435729d"
+      "commit": "e29d691d41dca6626171ee7282b0bdaeb15d38b3"
+    },
+    "async/async.d.ts": {
+      "commit": "e29d691d41dca6626171ee7282b0bdaeb15d38b3"
+    },
+    "ansicolors/ansicolors.d.ts": {
+      "commit": "e29d691d41dca6626171ee7282b0bdaeb15d38b3"
     }
   }
 }

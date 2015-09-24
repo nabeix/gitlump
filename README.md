@@ -20,7 +20,7 @@ npm install -g gitlump
 gitlump create
 ```
 
-This command ask you some of questions.
+This command asks you some of questions.
 After finished, gitlump creates new directory named GitHub user or organization name, and creates `.gitlump.json` file in the directory.
 
 
@@ -78,20 +78,20 @@ gitlump pull
 
 ### Other Git commands
 
-All git commands are available after `gitlump -c`.
+All git commands are available after `gitlump exec`.
 
 The followings are examples:
 
 ```
-gitlump -c status
+gitlump exec status
 ```
 
 ```
-gitlump -c checkout master
+gitlump exec checkout master
 ```
 
 ```
-gitlump -c commit -m "update"
+gitlump exec commit -m "update"
 ```
 
 ## Contribution

@@ -9,6 +9,7 @@
     "sourceMap": false
   },
   "files": [
+    "src/utils.ts",
     "src/gitlump.ts"
   ]
 }
