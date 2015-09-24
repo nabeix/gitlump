@@ -54,7 +54,7 @@ gitlump init
   * If the endpoint requires authentication: `"auth": {"token": "your token"}`
 * `type` [user|orgs]
 * `name` Github user or organization name
-* `defaultProtocol` [ssh|https|svn] (default ssh)
+* `defaultProtocol` ssh|https|svn (default ssh)
 * `repos` A list of repository specific settings (default blank)
   * `name` repository name
   * `protocol` used instead of `defaultProtocol`
