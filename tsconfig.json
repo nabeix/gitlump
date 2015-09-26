@@ -9,8 +9,10 @@
     "sourceMap": false
   },
   "files": [
-    "src/PromptlyPromise.ts",
+    "src/ConfigJson.ts",
+    "src/GitConnection.ts",
+    "src/commands.ts",
     "src/utils.ts",
-    "src/gitlump.ts"
+    "src/cli.ts"
   ]
 }

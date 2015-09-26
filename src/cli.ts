@@ -4,46 +4,29 @@ import program = require("commander");
 import colors = require("ansicolors");
 import {exec} from "child_process";
 import async = require("async");
-import promptly = require("./PromptlyPromise");
-import utils = require("./utils");
 
+import utils = require("./utils");
+import commands = require("./commands");
 
 var version = require("../package.json").version;
-
-var promptResult: any = {};
 
 program
     .version(version);
 
 program
-    .command("create")
-    .description("Create user or organization directory and initialize.")
-    .action(() => {
-        promptly
-            .prompt("[u]ser or [o]rganization :")
-            .then((value) => {
-                promptResult.type = value;
-                return promptly
-                    .prompt("Name :")
-            }).then((value) => {
-                promptResult.type = value
-                console.log(promptResult);
-            });
-    });
+    .command("create <type> <name>")
+    .description("Initialize with creating new directory.")
+    .action(commands.create);
 
 program
-    .command("init")
+    .command("init <type> <name>")
     .description("Initialize exisiting directory.")
-    .action(() => {
-        
-    });
+    .action(commands.init);
 
 program
     .command("clone")
     .description("Clone repositories.")
-    .action(() => {
-        
-    });
+    .action(commands.clone);
 
 program
     .command("pull")

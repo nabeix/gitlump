@@ -14,21 +14,25 @@ npm install -g gitlump
 
 ### Initialize
 
-#### Create new directory
+#### User repositries
 
 ```
-gitlump create
+gitlump create user <name>
 ```
 
-This command asks you some of questions.
-After finished, gitlump creates new directory named GitHub user or organization name, and creates `.gitlump.json` file in the directory.
+#### Origanization repositories
 
+```
+gitlump create org <name>
+```
+
+After command finished, gitlump creates new directory named GitHub user or organization name, and creates `.gitlump.json` file in the directory.
 
 #### Use existing directory
 
 ```
 cd your-directory
-gitlump init
+gitlump init <type> <name>
 ```
 
 #### .gitlump.json
