@@ -9,6 +9,7 @@
     "sourceMap": false
   },
   "files": [
+    "src/PromptlyPromise.ts",
     "src/utils.ts",
     "src/gitlump.ts"
   ]

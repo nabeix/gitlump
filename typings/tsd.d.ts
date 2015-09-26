@@ -3,3 +3,4 @@
 /// <reference path="node/node.d.ts" />
 /// <reference path="async/async.d.ts" />
 /// <reference path="ansicolors/ansicolors.d.ts" />
+/// <reference path="promptly/promptly.d.ts" />

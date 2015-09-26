@@ -16,6 +16,9 @@
     },
     "ansicolors/ansicolors.d.ts": {
       "commit": "e29d691d41dca6626171ee7282b0bdaeb15d38b3"
+    },
+    "promptly/promptly.d.ts": {
+      "commit": "e29d691d41dca6626171ee7282b0bdaeb15d38b3"
     }
   }
 }
