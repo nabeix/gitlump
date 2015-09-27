@@ -1,36 +1,40 @@
 /// <reference path="../typings/tsd.d.ts" />
 
-import fs = require("fs");
+import * as fs from "fs";
+import * as colors from "ansicolors";
 
-import ConfigJson = require("./ConfigJson");
+import * as utils from "./utils";
+import {CloneConfig, ConfigJson, GitRepository, CloneArguments} from "./interfaces";
+import GitHubConnection = require("./GitHubConnection");
+import * as GitCommands from "./GitCommands";
 
-function createConfigJson(type: string, name: string): ConfigJson {
-    if (type !== "user" && type !== "org") {
-        console.log("error: type should be user or org.");
-        return;
-    }
-    return {
-        endpoint: "https://api.github.com/",
-        auth: {},
-        type: type,
-        name: name,
-        defaultProtocol: "ssh",
-        repos: [],
-        ignore: [],
-        cloned: []
-    }
-}
-
-// write .gitlump.json in current directory.
-function writeConfigJson(path: string, json: ConfigJson, callback: (error: NodeJS.ErrnoException) => void) {
-    fs.writeFile(path + "/.gitlump.json", JSON.stringify(json, null, "    "), callback);
-}
-
-// read .gitlump.json in current directory.
-function readConfigJson(callback: (error: NodeJS.ErrnoException, json: ConfigJson) => void) {
-    fs.readFile("./.gitlump.json", (error: NodeJS.ErrnoException, data: Buffer) => {
-        callback(error, JSON.parse(data.toString()));
+function createCloneArguments(repo: GitRepository, json: ConfigJson): CloneArguments {
+    var cloneConfig: CloneConfig = null;
+    var protocol: string = null;
+    var directory: string = null;
+    json.repos.forEach((config: CloneConfig) => {
+        if (config.name !== repo.name) {
+            return;
+        }
+        cloneConfig = config;
     });
+    if (cloneConfig) {
+        if (cloneConfig.directory) {
+            directory = cloneConfig.directory;
+        }
+        protocol = cloneConfig.protocol;
+    }
+    if (!protocol) {
+        protocol = json.defaultProtocol;
+    }
+    if (!directory) {
+        directory = repo.name;
+    }
+    var url = protocol === "https" ? repo.httpsUrl : repo.sshUrl;
+    return {
+        url: url,
+        directory: directory
+    }
 }
 
 // gitlump create
@@ -42,17 +46,17 @@ export function create(type: string, name: string): void {
     fs.mkdir(name, (error) => {
         if (error) {
             if (error.code === "EEXIST") {
-                console.log(`error: directory ${name} already exists.`);
+                utils.exitWithError(`Directory ${name} already exists.`);
             } else {
-                console.log(`error: faild to create directory ${name}.`);
+                utils.exitWithError(`Faild to create directory ${name}.`);
             }
-            return;
         }
-        var json = createConfigJson(type, name);
-        writeConfigJson(name, json, (error) => {
-            if (error) {
-                console.log("error: failed to create .gitlump.json.");
-            }
+        utils.createConfigJson(type, name).then((json) => {
+            return utils.writeConfigJson(".", json);
+        }).then(() => {
+            console.log("done");
+        }).catch((error) => {
+            utils.exitWithError(error.message);
         });
     });
 }
@@ -60,25 +64,53 @@ export function create(type: string, name: string): void {
 // gitlump init
 export function init(type: string, name: string): void {
     if (type !== "user" && type !== "org") {
-        console.log("error: type should be \"user\" or \"org\".");
-        return;
+        utils.exitWithError("type should be \"user\" or \"org\".");
     }
-    var json = createConfigJson(type, name);
-    writeConfigJson(".", json, (error) => {
-        if (error) {
-            console.log("error: failed to create .gitlump.json.");
-        }
+    utils.createConfigJson(type, name).then((json) => {
+        return utils.writeConfigJson(".", json);
+    }).then(() => {
+        console.log("done");
+    }).catch((error) => {
+        utils.exitWithError(error.message);
     });
 }
 
 // gitlump clone
 export function clone(): void {
-    readConfigJson((error, json) => {
-        if (error) {
-            console.log("error: failed to read .gitlump.json.");
-            return;
+    var configJson: ConfigJson = null;
+    var cloned: string[] = [];
+    utils.readConfigJson().then((config) => {
+        configJson = config;
+        var gh = new GitHubConnection(config.endpoint);
+        return gh.getRepositories(config.type, config.name);
+    }).then((list: GitRepository[]) => {
+        var clonePromises: Promise<GitCommands.ExecResult>[] = [];
+        for (var i = 0; i < list.length; i++) {
+            var repo = list[i];
+            if (configJson.ignore.indexOf(repo.name) === -1) {
+                cloned.push(repo.name);
+                if (configJson.cloned.indexOf(repo.name) === -1) {
+                var cloneArgs = createCloneArguments(repo, configJson);
+                    clonePromises.push(GitCommands.clone(".", cloneArgs.url, cloneArgs.directory));
+                }
+            }
+        };
+        if (clonePromises.length) {
+            return Promise.all(clonePromises);
+        } else {
+            console.log("No new repositories.");
+            process.exit();
         }
-        console.log(json);
+    }).then((results) => {
+        results.forEach((result) => {
+            console.log(result.command);
+        });
+        configJson.cloned = cloned;
+        return utils.writeConfigJson(".", configJson);
+    }).then(() => {
+        // done
+    }).catch((error) => {
+        utils.exitWithError(error.message);
     });
 }
 

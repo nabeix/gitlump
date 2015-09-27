@@ -56,9 +56,9 @@ gitlump init <type> <name>
   * If use GitHub Enterprise: http(s)://hostname/api/v3/
 * `auth` Authentication settings (default blank)
   * If the endpoint requires authentication: `"auth": {"token": "your token"}`
-* `type` user|organization
+* `type` user|org
 * `name` Github user or organization name
-* `defaultProtocol` ssh|https|svn (default ssh)
+* `defaultProtocol` ssh|https (default ssh)
 * `repos` A list of repository specific settings (default blank)
   * `name` repository name
   * `protocol` used instead of `defaultProtocol`
