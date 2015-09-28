@@ -52,7 +52,7 @@ export function create(type: string, name: string): void {
             }
         }
         utils.createConfigJson(type, name).then((json) => {
-            return utils.writeConfigJson(".", json);
+            return utils.writeConfigJson(`./${name}`, json);
         }).then(() => {
             console.log("done");
         }).catch((error) => {
