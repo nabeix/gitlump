@@ -7,7 +7,7 @@ A command line tool to manage all repositories of GitHub user or organization.
 ## Install
 
 ```
-npm install -g gitlump
+$ npm install -g gitlump
 ```
 
 ## Usage
@@ -17,13 +17,13 @@ npm install -g gitlump
 #### User repositries
 
 ```
-gitlump create user <name>
+$ gitlump create user <name>
 ```
 
 #### Origanization repositories
 
 ```
-gitlump create org <name>
+$ gitlump create org <name>
 ```
 
 After command finished, gitlump creates new directory named GitHub user or organization name, and creates `.gitlump.json` file in the directory.
@@ -31,14 +31,14 @@ After command finished, gitlump creates new directory named GitHub user or organ
 #### Use existing directory
 
 ```
-cd your-directory
-gitlump init <type> <name>
+$ cd your-directory
+$ gitlump init <type> <name>
 ```
 
 #### .gitlump.json
 
 `.gitlump.json` is a config file of gitlump.
-
+/
 ```
 {
   "endpoint": "https://api.github.com/",
@@ -69,7 +69,7 @@ gitlump init <type> <name>
 ### Clone
 
 ```
-gitlump clone
+$ gitlump clone
 ```
 
 `gitlump clone` automatically clones all repositories.
@@ -78,7 +78,7 @@ gitlump clone
 ### Pull
 
 ```
-gitlump pull
+$ gitlump pull
 ```
 
 `gitlump pull` runs `git pull` command in all repository directories.
@@ -91,15 +91,15 @@ Almost all git commands are available after `gitlump exec`.
 The followings are examples:
 
 ```
-gitlump exec status
+$ gitlump exec status
 ```
 
 ```
-gitlump exec checkout master
+$ gitlump exec checkout master
 ```
 
 ```
-gitlump exec commit -m "update"
+$ gitlump exec commit -m "update"
 ```
 
 ## Contribution
