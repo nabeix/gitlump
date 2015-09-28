@@ -16,12 +16,16 @@ program
 program
     .command("create <type> <name>")
     .description("Initialize with creating new directory.")
-    .action(commands.create);
+    .action((type, name) => {
+        commands.create(type, name);
+    });
 
 program
     .command("init <type> <name>")
     .description("Initialize exisiting directory.")
-    .action(commands.init);
+    .action((type, name) => {
+        commands.init(type, name)
+    });
 
 program
     .command("clone")
@@ -33,9 +37,8 @@ program
 program
     .command("pull")
     .description("Pull repositories.")
-    .action((cmd, option) => {
-        console.log(cmd);
-        console.log(option);
+    .action(() => {
+        commands.pull();
     });
 
 program

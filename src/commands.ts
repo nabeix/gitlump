@@ -4,16 +4,21 @@ import * as fs from "fs";
 import * as colors from "ansicolors";
 
 import * as utils from "./utils";
+import * as errors from "./errors";
 import * as prompt from "./prompt";
-import {AuthInfo, CloneConfig, ConfigJson, GitRepository, CloneArguments} from "./interfaces";
-import {ConnectionError, ConnectionErrorCode, GitHubConnection} from "./GitHubConnection";
+import ConfigManager from "./ConfigManager";
+
+import {AuthInfo, RepositoryConfig, AppConfig, GitRepository, CloneArguments} from "./interfaces";
+import GitHubConnection from "./GitHubConnection";
 import * as GitCommands from "./GitCommands";
 
-function createCloneArguments(repo: GitRepository, json: ConfigJson): CloneArguments {
-    var cloneConfig: CloneConfig = null;
+var CONFIG_FILENAME = ".gitlump.json";
+
+function createCloneArguments(repo: GitRepository, json: AppConfig): CloneArguments {
+    var cloneConfig: RepositoryConfig = null;
     var protocol: string = null;
     var directory: string = null;
-    json.repos.forEach((config: CloneConfig) => {
+    json.repos.forEach((config: RepositoryConfig) => {
         if (config.name !== repo.name) {
             return;
         }
@@ -40,48 +45,39 @@ function createCloneArguments(repo: GitRepository, json: ConfigJson): CloneArgum
 
 // gitlump create
 export function create(type: string, name: string): void {
-    if (type !== "user" && type !== "org") {
-        console.log("error: type should be \"user\" or \"org\".");
-        return;
-    }
-    fs.mkdir(name, (error) => {
-        if (error) {
-            if (error.code === "EEXIST") {
-                utils.exitWithError(`Directory ${name} already exists.`);
-            } else {
-                utils.exitWithError(`Faild to create directory ${name}.`);
-            }
-        }
-        utils.createConfigJson(type, name).then((json) => {
-            return utils.writeConfigJson(`./${name}`, json);
-        }).then(() => {
-            console.log("done");
-        }).catch((error) => {
-            utils.exitWithError(error.message);
-        });
+    var manager: ConfigManager = null;
+    ConfigManager.createConfig(type, name).then((config) => {
+        manager = new ConfigManager(config);
+        return utils.mkdir(name);
+    }).then(() => {
+        return manager.writeToFile(`./${name}/${CONFIG_FILENAME}`);
+    }).then(() => {
+        console.log("done");
+    }).catch((error) => {
+        utils.exitWithError(error);
     });
 }
 
 // gitlump init
 export function init(type: string, name: string): void {
-    if (type !== "user" && type !== "org") {
-        utils.exitWithError("type should be \"user\" or \"org\".");
-    }
-    utils.createConfigJson(type, name).then((json) => {
-        return utils.writeConfigJson(".", json);
+    var manager: ConfigManager = null;
+    ConfigManager.createConfig(type, name).then((config) => {
+        manager = new ConfigManager(config);
+        return manager.writeToFile(`./${CONFIG_FILENAME}`);
     }).then(() => {
         console.log("done");
     }).catch((error) => {
-        utils.exitWithError(error.message);
+        utils.exitWithError(error);
     });
 }
 
 // gitlump clone
 export function clone(arg?: {auth: AuthInfo}): void {
-    var configJson: ConfigJson = null;
+    var manager = new ConfigManager();
+    var config: AppConfig = null;
     var cloned: string[] = [];
-    utils.readConfigJson().then((config) => {
-        configJson = config;
+    manager.loadFromFile(`./${CONFIG_FILENAME}`).then(() => {
+        config = manager.config;
         var gh = new GitHubConnection(config.endpoint);
         if (arg && arg.auth) {
             gh.auth(arg.auth.username, arg.auth.password);
@@ -91,10 +87,10 @@ export function clone(arg?: {auth: AuthInfo}): void {
         var clonePromises: Promise<GitCommands.ExecResult>[] = [];
         for (var i = 0; i < list.length; i++) {
             var repo = list[i];
-            if (configJson.ignore.indexOf(repo.name) === -1) {
+            if (!manager.ignored(repo.name)) {
                 cloned.push(repo.name);
-                if (configJson.cloned.indexOf(repo.name) === -1) {
-                var cloneArgs = createCloneArguments(repo, configJson);
+                if (!manager.cloned(repo.name)) {
+                    var cloneArgs = createCloneArguments(repo, config);
                     clonePromises.push(GitCommands.clone(".", cloneArgs.url, cloneArgs.directory));
                 }
             }
@@ -109,24 +105,37 @@ export function clone(arg?: {auth: AuthInfo}): void {
         results.forEach((result) => {
             console.log(result.command);
         });
-        configJson.cloned = cloned;
-        return utils.writeConfigJson(".", configJson);
+        config.cloned = cloned;
+        return manager.writeToFile(`./${CONFIG_FILENAME}`);
     }).then(() => {
         // done
-    }).catch((error: Error) => {
-        if ((error instanceof ConnectionError)
-            && (error.code === ConnectionErrorCode.AuthRequired
-                || error.code === ConnectionErrorCode.AuthFailed)) {
+    }).catch((error: errors.BaseError) => {
+        if ((error instanceof errors.AuthFailedError)
+            || (error instanceof errors.AuthRequiredError)) {
             console.log(error.message);
             prompt.auth().then((value: AuthInfo) => {
                 clone({auth: value});
-            }).catch((error: Error) => {
-                utils.exitWithError(error.message);
+            }).catch((error: errors.BaseError) => {
+                utils.exitWithError(error);
             });
         } else {
-            utils.exitWithError(error.message);
+            utils.exitWithError(error);
         }
     });
+}
+
+// gltlump pull
+export function pull(): void {
+    var manager = new ConfigManager();
+    var config: AppConfig = null;
+    manager.loadFromFile(`./${CONFIG_FILENAME}`).then(() => {
+        config = manager.config;
+        config.cloned.forEach(() => {
+            GitCommands.exec(".", "pull");
+        });
+    }).catch((error: errors.BaseError) => {
+        utils.exitWithError(error);
+    })
 }
 
 // gitlump exec

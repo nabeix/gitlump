@@ -3,7 +3,7 @@ export interface AuthInfo {
     password: string
 }
 
-export interface CloneConfig {
+export interface RepositoryConfig {
     name: string;
     protocol: string;
     directory: string;
@@ -14,12 +14,12 @@ export interface CloneArguments {
     directory: string;
 }
 
-export interface ConfigJson {
+export interface AppConfig {
     endpoint: string;
     type: string;
     name: string;
     defaultProtocol: string;
-    repos: CloneConfig[];
+    repos: RepositoryConfig[];
     ignore: string[];
     cloned: string[];
 }
@@ -28,4 +28,9 @@ export interface GitRepository {
     name: string;
     sshUrl: string;
     httpsUrl: string;
+}
+
+export interface CloneConfig {
+    url: string;
+    directory: string;
 }

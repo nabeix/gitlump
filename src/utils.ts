@@ -1,58 +1,31 @@
 import * as fs from "fs";
 import * as async from "async";
 
-import {ConfigJson} from "./interfaces";
+import * as errors from "./errors";
+import {AppConfig} from "./interfaces";
 
 
-export function exitWithError(message: string) {
-    console.log(message);
+export function exitWithError(error: errors.BaseError) {
+    console.log("error: " + error.message);
     process.exit(1);
 }
 
-export function createConfigJson(type: string, name: string): Promise<ConfigJson> {
-    return new Promise<ConfigJson>((resolve, reject) => {
-        if (type !== "user" && type !== "org") {
-            reject(new Error("type should be user or org."));
-            return;
-        }
-        resolve({
-            endpoint: "https://api.github.com/",
-            type: type,
-            name: name,
-            defaultProtocol: "ssh",
-            repos: [],
-            ignore: [],
-            cloned: []
-        });
-    });
-}
-
-// write .gitlump.json in current directory.
-export function writeConfigJson(path: string, json: ConfigJson): Promise<void> {
+export function mkdir(path: string): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-        fs.writeFile(path + "/.gitlump.json", JSON.stringify(json, null, "    "), (error) => {
+        fs.mkdir(path, (error) => {
             if (error) {
-                reject("Failed to write .gitlump.json.");
-            } else {
-                resolve();
+                if (error.code === "EEXIST") {
+                    reject(new errors.CreateDirectoryError(`Directory ${path} already exists.`, error));
+                } else {
+                    reject(new errors.CreateDirectoryError(`Faild to create directory ${path}.`, error));
+                }
             }
-        });
+            resolve();
+        })
     });
 }
 
-// read .gitlump.json in current directory.
-export function readConfigJson(): Promise<ConfigJson> {
-    return new Promise<ConfigJson>((resolve, reject) => {
-        fs.readFile("./.gitlump.json", (error: NodeJS.ErrnoException, data: Buffer) => {
-            if (error) {
-                reject(new Error("Failed to read .gitlump.json."));
-            } else {
-                resolve(JSON.parse(data.toString()));
-            }
-        });
-    });
-}
-
+// to be removed
 export function isGitDirectory(path: string): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
         if (!path) {
@@ -68,6 +41,7 @@ export function isGitDirectory(path: string): Promise<boolean> {
     });
 }
 
+// to be removed
 export function gitDirectoryList(basePath?: string): Promise<string[]> {
     if (!basePath) {
         basePath = process.cwd();
