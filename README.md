@@ -42,7 +42,6 @@ $ gitlump init <type> <name>
 ```
 {
   "endpoint": "https://api.github.com/",
-  "auth": {},
   "type": "user",
   "name": "nabeix",
   "defaultProtocol": "ssh",
@@ -54,8 +53,6 @@ $ gitlump init <type> <name>
 
 * `endpoint` GitHub API Endpoint (default https://api.github.com/)
   * If use GitHub Enterprise: http(s)://hostname/api/v3/
-* `auth` Authentication settings (default blank)
-  * If the endpoint requires authentication: `"auth": {"token": "your token"}`
 * `type` user|org
 * `name` Github user or organization name
 * `defaultProtocol` ssh|https (default ssh)

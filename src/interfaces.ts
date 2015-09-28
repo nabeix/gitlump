@@ -11,7 +11,6 @@ export interface CloneArguments {
 
 export interface ConfigJson {
     endpoint: string;
-    auth: {};
     type: string;
     name: string;
     defaultProtocol: string;
