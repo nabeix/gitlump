@@ -26,7 +26,9 @@ program
 program
     .command("clone")
     .description("Clone repositories.")
-    .action(commands.clone);
+    .action(() => {
+        commands.clone();
+    });
 
 program
     .command("pull")
@@ -43,16 +45,7 @@ program
     .action((cmd, option) => {
         var index = process.argv.indexOf("exec");
         var opts = process.argv.slice(index + 1).join(" ");
-        utils.gitDirectoryList().then((dirs) => {
-            var cmd = `git ${opts}`;
-            console.log(colors["red"](`Run ${cmd}`));
-            async.each(dirs, (dirName, callback) => {
-                exec(cmd, {cwd: dirName}, (error, stdout, stderr) => {
-                    console.log(colors["red"](`>> ${dirName}`));
-                    console.log(stdout);
-                });
-            });
-        })
+        commands.exec(opts);
     });
 
 program

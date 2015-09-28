@@ -12,6 +12,7 @@
     "src/interfaces.ts",
     "src/GitCommands.ts",
     "src/GitHubConnection.ts",
+    "src/prompt.ts",
     "src/commands.ts",
     "src/utils.ts",
     "src/cli.ts"

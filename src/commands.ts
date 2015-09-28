@@ -4,8 +4,9 @@ import * as fs from "fs";
 import * as colors from "ansicolors";
 
 import * as utils from "./utils";
-import {CloneConfig, ConfigJson, GitRepository, CloneArguments} from "./interfaces";
-import GitHubConnection = require("./GitHubConnection");
+import * as prompt from "./prompt";
+import {AuthInfo, CloneConfig, ConfigJson, GitRepository, CloneArguments} from "./interfaces";
+import {ConnectionError, ConnectionErrorCode, GitHubConnection} from "./GitHubConnection";
 import * as GitCommands from "./GitCommands";
 
 function createCloneArguments(repo: GitRepository, json: ConfigJson): CloneArguments {
@@ -76,12 +77,15 @@ export function init(type: string, name: string): void {
 }
 
 // gitlump clone
-export function clone(): void {
+export function clone(arg?: {auth: AuthInfo}): void {
     var configJson: ConfigJson = null;
     var cloned: string[] = [];
     utils.readConfigJson().then((config) => {
         configJson = config;
         var gh = new GitHubConnection(config.endpoint);
+        if (arg && arg.auth) {
+            gh.auth(arg.auth.username, arg.auth.password);
+        }
         return gh.getRepositories(config.type, config.name);
     }).then((list: GitRepository[]) => {
         var clonePromises: Promise<GitCommands.ExecResult>[] = [];
@@ -109,8 +113,19 @@ export function clone(): void {
         return utils.writeConfigJson(".", configJson);
     }).then(() => {
         // done
-    }).catch((error) => {
-        utils.exitWithError(error.message);
+    }).catch((error: Error) => {
+        if ((error instanceof ConnectionError)
+            && (error.code === ConnectionErrorCode.AuthRequired
+                || error.code === ConnectionErrorCode.AuthFailed)) {
+            console.log(error.message);
+            prompt.auth().then((value: AuthInfo) => {
+                clone({auth: value});
+            }).catch((error: Error) => {
+                utils.exitWithError(error.message);
+            });
+        } else {
+            utils.exitWithError(error.message);
+        }
     });
 }
 

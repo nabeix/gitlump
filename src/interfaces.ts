@@ -1,3 +1,8 @@
+export interface AuthInfo {
+    username: string,
+    password: string
+}
+
 export interface CloneConfig {
     name: string;
     protocol: string;

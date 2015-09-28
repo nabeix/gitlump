@@ -17,7 +17,6 @@ export function createConfigJson(type: string, name: string): Promise<ConfigJson
         }
         resolve({
             endpoint: "https://api.github.com/",
-            auth: {},
             type: type,
             name: name,
             defaultProtocol: "ssh",
