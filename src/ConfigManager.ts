@@ -68,7 +68,7 @@ export default class ConfigManager {
         }
         var result: RepositoryConfig = null;
         this.config.repos.forEach((config: RepositoryConfig) => {
-            if (config.name !== name) {
+            if (config.name !== repoName) {
                 return;
             }
             result = config;

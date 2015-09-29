@@ -18,7 +18,10 @@ function _clone(path: string, args: CloneConfig[]): Promise<void> {
     var index = 0;
     return new Promise<void>((resolve, reject) => {
         var execFunc = (path: string, url: string, directory: string, name: string) => {
-            var startMessage = `clone ${name} into ${directory}`;
+            var startMessage = `clone ${name}`;
+            if (name !== directory) {
+                startMessage += ` into ${directory}`;
+            }
             console.log(startMessage);
             gitCommands.clone(path, url, directory).then(() => {
                 process.stdout.write("\u001B[1A\u001B[" + startMessage.length + "C");
