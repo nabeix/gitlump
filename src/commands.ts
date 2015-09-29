@@ -6,21 +6,21 @@ import * as colors from "ansicolors";
 import * as utils from "./utils";
 import * as errors from "./errors";
 import * as prompt from "./prompt";
+import * as gitCommands from "./gitCommands";
 import ConfigManager from "./ConfigManager";
 
 import {AuthInfo, RepositoryConfig, AppConfig, GitRepository, CloneConfig} from "./interfaces";
 import GitHubConnection from "./GitHubConnection";
-import * as GitCommands from "./GitCommands";
 
 var CONFIG_FILENAME = ".gitlump.json";
 
-function execGitClone(path: string, args: CloneConfig[]): Promise<void> {
+function _clone(path: string, args: CloneConfig[]): Promise<void> {
     var index = 0;
     return new Promise<void>((resolve, reject) => {
         var execFunc = (path: string, url: string, directory: string, name: string) => {
             var startMessage = `clone ${name} into ${directory}`;
             console.log(startMessage);
-            GitCommands.clone(path, url, directory).then(() => {
+            gitCommands.clone(path, url, directory).then(() => {
                 process.stdout.write("\u001B[1A\u001B[" + startMessage.length + "C");
                 console.log(" ... done");
                 index++;
@@ -38,13 +38,13 @@ function execGitClone(path: string, args: CloneConfig[]): Promise<void> {
     });
 }
 
-function execGitPull(dirs: string[]): Promise<void> {
+function _exec(dirs: string[], command: string): Promise<void> {
     var index = 0;
     return new Promise<void>((resolve, reject) => {
         var execFunc = (path: string) => {
-            var startMessage = `pull in ${path}`;
+            var startMessage = `${command} in ${path}`;
             console.log(startMessage);
-            GitCommands.pull(path).then((result) => {
+            gitCommands.exec(path, command).then((result) => {
                 process.stdout.write("\u001B[1A\u001B[" + startMessage.length + "C");
                 console.log(" ... done");
                 console.log(result.stdout);
@@ -114,7 +114,7 @@ export function clone(arg?: {auth: AuthInfo}): void {
             }
         }
         if (cloneArgs.length) {
-            return execGitClone(".", cloneArgs);
+            return _clone(".", cloneArgs);
         } else {
             console.log("No new repositories.");
             process.exit();
@@ -151,7 +151,7 @@ export function pull(): void {
     var config: AppConfig = null;
     manager.loadFromFile(`./${CONFIG_FILENAME}`).then(() => {
         var dirs = manager.clonedDirectories();
-        return execGitPull(dirs);
+        return _exec(dirs, "pull");
     }).catch((error: errors.BaseError) => {
         utils.exitWithError(error);
     })
@@ -159,5 +159,12 @@ export function pull(): void {
 
 // gitlump exec
 export function exec(command: string): void {
-    utils.exitWithError(new errors.NotImplementedError());
+    var manager = new ConfigManager();
+    var config: AppConfig = null;
+    manager.loadFromFile(`./${CONFIG_FILENAME}`).then(() => {
+        var dirs = manager.clonedDirectories();
+        return _exec(dirs, command);
+    }).catch((error: errors.BaseError) => {
+        utils.exitWithError(error);
+    })
 }

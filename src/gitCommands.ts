@@ -28,10 +28,6 @@ export function clone(wd: string, url: string, directory: string): Promise<ExecR
     });
 }
 
-export function pull(wd: string): Promise<ExecResult> {
-    return exec(wd, "pull");
-}
-
 export function exec(wd: string, arg: string): Promise<ExecResult> {
     var cmd: string = `git ${arg}`;
     return new Promise<ExecResult>((resolve, reject) => {

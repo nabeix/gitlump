@@ -11,7 +11,7 @@
   "files": [
     "src/interfaces.ts",
     "src/errors.ts",
-    "src/GitCommands.ts",
+    "src/gitCommands.ts",
     "src/GitHubConnection.ts",
     "src/ConfigManager.ts",
     "src/prompt.ts",
