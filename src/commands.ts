@@ -20,12 +20,12 @@ function _clone(path: string, args: CloneConfig[]): Promise<void> {
         var execFunc = (path: string, url: string, directory: string, name: string) => {
             var startMessage = `clone ${name}`;
             if (name !== directory) {
-                startMessage += ` into ${directory}`;
+                startMessage += ` into \'${directory}\'`;
             }
             console.log(startMessage);
             gitCommands.clone(path, url, directory).then(() => {
-                process.stdout.write("\u001B[1A\u001B[" + startMessage.length + "C");
-                console.log(" ... done");
+                process.stdout.write("\u001B[1A");
+                console.log(`${startMessage} ... done`);
                 index++;
                 if (index < args.length) {
                     var arg = args[index];
@@ -45,11 +45,9 @@ function _exec(dirs: string[], command: string): Promise<void> {
     var index = 0;
     return new Promise<void>((resolve, reject) => {
         var execFunc = (path: string) => {
-            var startMessage = `${command} in ${path}`;
-            console.log(startMessage);
+            var startMessage = `>> git ${command} in \'${path}\'`;
+            console.log(colors["green"](startMessage));
             gitCommands.exec(path, command).then((result) => {
-                process.stdout.write("\u001B[1A\u001B[" + startMessage.length + "C");
-                console.log(" ... done");
                 console.log(result.stdout);
                 index++;
                 if (index < dirs.length) {
