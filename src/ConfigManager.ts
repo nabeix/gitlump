@@ -4,7 +4,7 @@ import * as fs from "fs";
 
 import * as errors from "./errors";
 
-import {RepositoryConfig, AppConfig} from "./interfaces";
+import {RepositoryConfig, AppConfig, GitRepository, CloneConfig} from "./interfaces";
 
 var DEFAULT_ENDPOINT = "https://api.github.com/";
 
@@ -64,7 +64,7 @@ export default class ConfigManager {
 
     repositoryConfig(repoName: string): RepositoryConfig {
         if (!this.config) {
-            return;
+            return null;
         }
         var result: RepositoryConfig = null;
         this.config.repos.forEach((config: RepositoryConfig) => {
@@ -74,6 +74,28 @@ export default class ConfigManager {
             result = config;
         });
         return result;
+    }
+
+    cloneConfig(repository: GitRepository): CloneConfig {
+        var protocol: string = null;
+        var directory: string = null;
+        var repoConfig = this.repositoryConfig(repository.name);
+        if (repoConfig) {
+            directory = repoConfig.directory;
+            protocol = repoConfig.protocol;
+        }
+        if (!protocol) {
+            protocol = this.config.defaultProtocol;
+        }
+        if (!directory) {
+            directory = repository.name;
+        }
+        var url = protocol === "https" ? repository.httpsUrl : repository.sshUrl;
+        return {
+            url: url,
+            directory: directory,
+            name: repository.name
+        }
     }
 
     ignored(repoName: string): boolean {

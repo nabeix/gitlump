@@ -4,7 +4,7 @@ import request = require("request");
 
 import {GitRepository} from "./interfaces";
 
-import {BaseError, AuthRequiredError, AuthFailedError} from "./errors";
+import * as errors from "./errors";
 
 export default class GitHubConnection {
     endpoint: string;
@@ -21,26 +21,28 @@ export default class GitHubConnection {
     }
 
     getRepositories(type: string, name: string): Promise<GitRepository[]> {
-        var url = this.endpoint;
-        if (type === "user") {
-            url += `users/${name}/repos`;
-        } else if (type === "org") {
-            url += `orgs/${name}/repos`;
-        }
-        var option = this.createRequestOption(url);
-        if (this.authData) {
-            option.auth = this.authData;
-        }
         return new Promise<GitRepository[]>((resolve, reject) => {
+            var url: string = null;
+            if (type === "user") {
+                url = this.requestURL(`users/${name}/repos`);
+            } else if (type === "org") {
+                url = this.requestURL(`orgs/${name}/repos`);
+            } else {
+                reject(new errors.InvalidTypeError("Type `${type}` is unknown."));
+            }
+            var option = this.createRequestOption(url);
+            if (this.authData) {
+                option.auth = this.authData;
+            }
             request.get(option, (error, response, body) => {
                 if (!error && response.statusCode === 200) {
                     resolve(this.convertList(body));
                 } else if (!error && response.statusCode === 403) {
-                    reject(new AuthRequiredError("Authentication is required."));;
+                    reject(new errors.AuthRequiredError("Authentication is required."));;
                 } else if (!error && response.statusCode === 401) {
-                    reject(new AuthFailedError("Authentication is failed."));
+                    reject(new errors.AuthFailedError("Authentication is failed."));
                 } else {
-                    reject(new BaseError("Failed to get repository list."));
+                    reject(new errors.BaseError("Failed to get repository list."));
                 }
             });
         })
@@ -74,4 +76,13 @@ export default class GitHubConnection {
         }
         return result;
     }
+
+    private requestURL(path: string): string {
+        if (this.endpoint[this.endpoint.length - 1] === "/") {
+            return this.endpoint + path;
+        } else {
+            return `${this.endpoint}/${path}`;
+        }
+    }
+
 }

@@ -9,11 +9,6 @@ export interface RepositoryConfig {
     directory: string;
 }
 
-export interface CloneArguments {
-    url: string;
-    directory: string;
-}
-
 export interface AppConfig {
     endpoint: string;
     type: string;
@@ -31,6 +26,7 @@ export interface GitRepository {
 }
 
 export interface CloneConfig {
-    url: string;
-    directory: string;
+    name: string,
+    directory: string,
+    url: string
 }

@@ -8,39 +8,34 @@ import * as errors from "./errors";
 import * as prompt from "./prompt";
 import ConfigManager from "./ConfigManager";
 
-import {AuthInfo, RepositoryConfig, AppConfig, GitRepository, CloneArguments} from "./interfaces";
+import {AuthInfo, RepositoryConfig, AppConfig, GitRepository, CloneConfig} from "./interfaces";
 import GitHubConnection from "./GitHubConnection";
 import * as GitCommands from "./GitCommands";
 
 var CONFIG_FILENAME = ".gitlump.json";
 
-function createCloneArguments(repo: GitRepository, json: AppConfig): CloneArguments {
-    var cloneConfig: RepositoryConfig = null;
-    var protocol: string = null;
-    var directory: string = null;
-    json.repos.forEach((config: RepositoryConfig) => {
-        if (config.name !== repo.name) {
-            return;
-        }
-        cloneConfig = config;
+function execGitCloneInOrder(path: string, args: CloneConfig[]): Promise<void> {
+    var index = 0;
+    return new Promise<void>((resolve, reject) => {
+        var execFunc = (path: string, url: string, directory: string, name: string) => {
+            var startMessage = `clone ${name} into ${directory}`;
+            console.log(startMessage);
+            GitCommands.clone(path, url, directory).then(() => {
+                process.stdout.write("\u001B[1A\u001B[" + startMessage.length + "C");
+                console.log(" ... done");
+                index++;
+                if (index < args.length) {
+                    var arg = args[index];
+                    execFunc(path, arg.url, arg.directory, arg.name);
+                } else {
+                    resolve();
+                }
+            }).catch((error) => {
+                reject(error);
+            });
+        };
+        execFunc(path, args[0].url, args[0].directory, args[0].name);
     });
-    if (cloneConfig) {
-        if (cloneConfig.directory) {
-            directory = cloneConfig.directory;
-        }
-        protocol = cloneConfig.protocol;
-    }
-    if (!protocol) {
-        protocol = json.defaultProtocol;
-    }
-    if (!directory) {
-        directory = repo.name;
-    }
-    var url = protocol === "https" ? repo.httpsUrl : repo.sshUrl;
-    return {
-        url: url,
-        directory: directory
-    }
 }
 
 // gitlump create
@@ -84,27 +79,23 @@ export function clone(arg?: {auth: AuthInfo}): void {
         }
         return gh.getRepositories(config.type, config.name);
     }).then((list: GitRepository[]) => {
-        var clonePromises: Promise<GitCommands.ExecResult>[] = [];
+        var cloneArgs: CloneConfig[] = [];
         for (var i = 0; i < list.length; i++) {
             var repo = list[i];
             if (!manager.ignored(repo.name)) {
                 cloned.push(repo.name);
                 if (!manager.cloned(repo.name)) {
-                    var cloneArgs = createCloneArguments(repo, config);
-                    clonePromises.push(GitCommands.clone(".", cloneArgs.url, cloneArgs.directory));
+                    cloneArgs.push(manager.cloneConfig(repo));
                 }
             }
-        };
-        if (clonePromises.length) {
-            return Promise.all(clonePromises);
+        }
+        if (cloneArgs.length) {
+            return execGitCloneInOrder(".", cloneArgs);
         } else {
             console.log("No new repositories.");
             process.exit();
         }
-    }).then((results) => {
-        results.forEach((result) => {
-            console.log(result.command);
-        });
+    }).then(() => {
         config.cloned = cloned;
         return manager.writeToFile(`./${CONFIG_FILENAME}`);
     }).then(() => {
@@ -112,7 +103,13 @@ export function clone(arg?: {auth: AuthInfo}): void {
     }).catch((error: errors.BaseError) => {
         if ((error instanceof errors.AuthFailedError)
             || (error instanceof errors.AuthRequiredError)) {
-            console.log(error.message);
+            var message: string = null;
+            if (error instanceof errors.AuthFailedError) {
+                message = "Authentication is failed.";
+            } else {
+                message = `Authentication is required by ${manager.config.endpoint}.`;
+            }
+            console.log(message);
             prompt.auth().then((value: AuthInfo) => {
                 clone({auth: value});
             }).catch((error: errors.BaseError) => {
@@ -126,6 +123,7 @@ export function clone(arg?: {auth: AuthInfo}): void {
 
 // gltlump pull
 export function pull(): void {
+    utils.exitWithError(new errors.NotImplementedError());
     var manager = new ConfigManager();
     var config: AppConfig = null;
     manager.loadFromFile(`./${CONFIG_FILENAME}`).then(() => {
@@ -140,5 +138,5 @@ export function pull(): void {
 
 // gitlump exec
 export function exec(command: string): void {
-
+    utils.exitWithError(new errors.NotImplementedError());
 }

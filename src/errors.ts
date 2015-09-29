@@ -12,6 +12,12 @@ export  class BaseError implements Error {
     }
 }
 
+export class NotImplementedError extends BaseError {
+    constructor() {
+        super("Not Implemented.");
+    }
+}
+
 export class ReadFileError extends BaseError {
     constructor(message: string, rawError: Error|NodeJS.ErrnoException) {
         super(message, rawError);
@@ -43,6 +49,12 @@ export class AuthFailedError extends BaseError {
 }
 
 export class InvalidConfigError extends BaseError {
+    constructor(message: string) {
+        super(message);
+    }
+}
+
+export class InvalidTypeError extends BaseError {
     constructor(message: string) {
         super(message);
     }
