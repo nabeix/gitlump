@@ -14,7 +14,7 @@ import * as GitCommands from "./GitCommands";
 
 var CONFIG_FILENAME = ".gitlump.json";
 
-function execGitCloneInOrder(path: string, args: CloneConfig[]): Promise<void> {
+function execGitClone(path: string, args: CloneConfig[]): Promise<void> {
     var index = 0;
     return new Promise<void>((resolve, reject) => {
         var execFunc = (path: string, url: string, directory: string, name: string) => {
@@ -35,6 +35,30 @@ function execGitCloneInOrder(path: string, args: CloneConfig[]): Promise<void> {
             });
         };
         execFunc(path, args[0].url, args[0].directory, args[0].name);
+    });
+}
+
+function execGitPull(dirs: string[]): Promise<void> {
+    var index = 0;
+    return new Promise<void>((resolve, reject) => {
+        var execFunc = (path: string) => {
+            var startMessage = `pull in ${path}`;
+            console.log(startMessage);
+            GitCommands.pull(path).then((result) => {
+                process.stdout.write("\u001B[1A\u001B[" + startMessage.length + "C");
+                console.log(" ... done");
+                console.log(result.stdout);
+                index++;
+                if (index < dirs.length) {
+                    execFunc(dirs[index]);
+                } else {
+                    resolve();
+                }
+            }).catch((error) => {
+                reject(error);
+            });
+        };
+        execFunc(dirs[0]);
     });
 }
 
@@ -90,7 +114,7 @@ export function clone(arg?: {auth: AuthInfo}): void {
             }
         }
         if (cloneArgs.length) {
-            return execGitCloneInOrder(".", cloneArgs);
+            return execGitClone(".", cloneArgs);
         } else {
             console.log("No new repositories.");
             process.exit();
@@ -123,14 +147,11 @@ export function clone(arg?: {auth: AuthInfo}): void {
 
 // gltlump pull
 export function pull(): void {
-    utils.exitWithError(new errors.NotImplementedError());
     var manager = new ConfigManager();
     var config: AppConfig = null;
     manager.loadFromFile(`./${CONFIG_FILENAME}`).then(() => {
-        config = manager.config;
-        config.cloned.forEach(() => {
-            GitCommands.exec(".", "pull");
-        });
+        var dirs = manager.clonedDirectories();
+        return execGitPull(dirs);
     }).catch((error: errors.BaseError) => {
         utils.exitWithError(error);
     })

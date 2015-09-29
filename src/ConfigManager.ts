@@ -105,4 +105,20 @@ export default class ConfigManager {
     cloned(repoName: string): boolean {
         return this.config.cloned.indexOf(repoName) !== -1;
     }
+
+    clonedDirectories(): string[] {
+        var result: string[] = [];
+        this.config.cloned.forEach((repoName) => {
+            if (this.ignored(repoName)) {
+                return;
+            }
+            var c = this.repositoryConfig(repoName);
+            if (c && c.directory) {
+                result.push(c.directory);
+            } else {
+                result.push(repoName);
+            }
+        });
+        return result;
+    }
 }
