@@ -80,6 +80,8 @@ $ gitlump pull
 
 `gitlump pull` runs `git pull` command in all repository directories.
 
+This is a shorthand of `gitlump exec pull`.
+
 
 ### Other Git commands
 
