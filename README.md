@@ -2,8 +2,6 @@
 
 A command line tool to manage all repositories of GitHub user or organization.
 
-***This project is WIP.***
-
 ## Install
 
 ```

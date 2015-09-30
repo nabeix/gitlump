@@ -1,12 +1,13 @@
 import * as fs from "fs";
 import * as async from "async";
+import * as colors from "ansicolors";
 
 import * as errors from "./errors";
 import {AppConfig} from "./interfaces";
 
 
 export function exitWithError(error: errors.BaseError) {
-    console.log("error: " + error.message);
+    console.log(colors["red"]("[ERROR] ") + error.message);
     process.exit(1);
 }
 

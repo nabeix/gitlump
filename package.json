@@ -1,11 +1,21 @@
 {
   "name": "gitlump",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "A command line tool to manage all git repositories of user or organization.",
   "main": "index.js",
+  "bin": {
+    "gitlump": "./bin/gitlump"
+  },
   "scripts": {
+    "prepublish": "gulp",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "files": [
+    "bin",
+    "lib",
+    "package.json",
+    "README.md"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/nabeix/gitlump.git"
