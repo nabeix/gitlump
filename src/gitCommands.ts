@@ -31,14 +31,20 @@ export function clone(wd: string, url: string, directory: string): Promise<ExecR
 export function exec(wd: string, arg: string): Promise<ExecResult> {
     var cmd: string = `git ${arg}`;
     return new Promise<ExecResult>((resolve, reject) => {
-        ChildProcess.exec(cmd, {cwd: wd}, (error: Error, stdout: Buffer, stderr: Buffer) => {
+        fs.stat(wd, (error, stat) => {
             if (error) {
-                reject(new Error(`Failed to exec: ${cmd}`));
+                reject(new Error(`Directory ${wd} not found.`));
             } else {
-                resolve({
-                    command: cmd,
-                    stdout: stdout.toString(),
-                    stderr: stderr.toString()
+                ChildProcess.exec(cmd, {cwd: wd}, (error: Error, stdout: Buffer, stderr: Buffer) => {
+                    if (error) {
+                        reject(new Error(`Failed to exec: ${cmd}`));
+                    } else {
+                        resolve({
+                            command: cmd,
+                            stdout: stdout.toString(),
+                            stderr: stderr.toString()
+                        });
+                    }
                 });
             }
         });
