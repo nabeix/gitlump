@@ -59,3 +59,9 @@ export class InvalidTypeError extends BaseError {
         super(message);
     }
 }
+
+export class UnknownProtocolError extends BaseError {
+    constructor(message: string) {
+        super(message);
+    }
+}
