@@ -44,7 +44,7 @@ export default class GitHubConnection {
                     var pageUrls = result.response.headers["link"] ? this.createPageUrls(result.response.headers["link"]) : null;
                     if (pageUrls && pageUrls.length > 1 ) {
                         var nextRequests: Promise<RequestResult>[] = [];
-                        // NOTE: The first url is already done in before this.requestGet().
+                        // NOTE: The first url is already done in the first this.requestGet().
                         for (var i = 1; i < pageUrls.length; i++) {
                             var opt = this.createRequestOption(pageUrls[i]);
                             nextRequests.push(this.requestGet(opt));

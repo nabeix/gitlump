@@ -36,7 +36,7 @@ $ gitlump init <type> <name>
 #### .gitlump.json
 
 `.gitlump.json` is a config file of gitlump.
-/
+
 ```
 {
   "endpoint": "https://api.github.com/",
@@ -55,9 +55,10 @@ $ gitlump init <type> <name>
 * `name` Github user or organization name
 * `defaultProtocol` ssh|https (default ssh)
 * `repos` A list of repository specific settings (default blank)
-  * `name` repository name
-  * `protocol` used instead of `defaultProtocol`
-  * `directory` clone directory name
+    * Example: `[{"name": "my-repo", "protocol": "https", "directory": "my-repo-directory"}]`
+        * `name` repository name
+        * `protocol` (optional) used instead of `defaultProtocol`
+        * `directory` (optional) clone directory name
 * `ignore` A list of repository names to be ignored (default blank)
 * `cloned` A list of cloned repository names (updated automatically by `gitlump clone`)
 
