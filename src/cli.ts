@@ -52,4 +52,12 @@ program
     });
 
 program
+    .command("status")
+    .description("Show status.")
+    .allowUnknownOption(true)
+    .action(() => {
+        commands.status();
+    });
+
+program
     .parse(process.argv);

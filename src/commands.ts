@@ -169,3 +169,15 @@ export function exec(command: string): void {
         utils.exitWithError(error);
     })
 }
+
+// gitlump status
+export function status(): void {
+    utils.exitWithError(new errors.NotImplementedError());
+    var manager = new ConfigManager();
+    var config: AppConfig = null;
+    manager.loadFromFile(`./${CONFIG_FILENAME}`).then(() => {
+        var dirs = manager.clonedDirectories();
+    }).catch((error: errors.BaseError) => {
+        utils.exitWithError(error);
+    })
+}
