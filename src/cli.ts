@@ -52,11 +52,11 @@ program
     });
 
 program
-    .command("status")
-    .description("Show status.")
+    .command("list")
+    .description("Show repositories.")
     .allowUnknownOption(true)
     .action(() => {
-        commands.status();
+        commands.list();
     });
 
 program
