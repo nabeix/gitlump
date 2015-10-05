@@ -171,12 +171,22 @@ export function exec(command: string): void {
 
 // gitlump list
 export function list(): void {
-    utils.exitWithError(new errors.NotImplementedError());
+    //utils.exitWithError(new errors.NotImplementedError());
     var manager = new ConfigManager();
     var config: AppConfig = null;
     manager.loadFromFile(`./${CONFIG_FILENAME}`).then(() => {
-        var config = manager.config;
-        var dirs = manager.clonedDirectories();
+        var cloned = manager.config.cloned;
+        cloned.sort();
+        cloned.forEach((repoName) => {
+            var c = manager.repositoryConfig(repoName);
+            console.log(repoName);
+            var message = repoName;
+            if (c) {
+                if (c.directory) {
+                    message += ` ${c.directory}`;
+                }
+            }
+        });
     }).catch((error: errors.BaseError) => {
         utils.exitWithError(error);
     })
