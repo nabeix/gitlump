@@ -26,7 +26,6 @@ export function mkdir(path: string): Promise<void> {
     });
 }
 
-// to be removed
 export function isGitDirectory(path: string): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
         if (!path) {
@@ -42,7 +41,6 @@ export function isGitDirectory(path: string): Promise<boolean> {
     });
 }
 
-// to be removed
 export function gitDirectoryList(basePath?: string): Promise<string[]> {
     if (!basePath) {
         basePath = process.cwd();

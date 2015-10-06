@@ -175,17 +175,22 @@ export function list(): void {
     var manager = new ConfigManager();
     var config: AppConfig = null;
     manager.loadFromFile(`./${CONFIG_FILENAME}`).then(() => {
+        return utils.gitDirectoryList(".");
+    }).then((gitDirectoryList) => {
         var cloned = manager.config.cloned;
         cloned.sort();
         cloned.forEach((repoName) => {
             var c = manager.repositoryConfig(repoName);
-            console.log(repoName);
             var message = repoName;
-            if (c) {
-                if (c.directory) {
-                    message += ` ${c.directory}`;
-                }
+            var directory = repoName;
+            if (c && c.directory) {
+                message += ` (${c.directory})`;
+                directory = c.directory;
             }
+            if (gitDirectoryList.indexOf(directory) === -1) {
+                message += " -- " + colors["red"]("does not exist as git directory");
+            }
+            console.log(message);
         });
     }).catch((error: errors.BaseError) => {
         utils.exitWithError(error);
