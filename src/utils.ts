@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as async from "async";
-import * as colors from "ansicolors";
+import * as colors from "colors";
 
 import * as errors from "./errors";
 import {AppConfig} from "./interfaces";

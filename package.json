@@ -23,12 +23,12 @@
   "author": "Yusuke Watanabe",
   "license": "MIT",
   "devDependencies": {
+    "colors": "^1.1.2",
     "gulp": "^3.9.0",
     "tsd": "^0.6.4",
     "typescript": "^1.6.2"
   },
   "dependencies": {
-    "ansicolors": "^0.3.2",
     "async": "^1.4.2",
     "commander": "^2.8.1",
     "promptly": "^0.2.1",

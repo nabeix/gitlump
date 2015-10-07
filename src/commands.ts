@@ -1,7 +1,7 @@
 /// <reference path="../typings/tsd.d.ts" />
 
 import * as fs from "fs";
-import * as colors from "ansicolors";
+import * as colors from "colors";
 
 import * as utils from "./utils";
 import * as errors from "./errors";
@@ -169,8 +169,8 @@ export function exec(command: string): void {
     })
 }
 
-// gitlump list
-export function list(): void {
+// gitlump ls
+export function ls(): void {
     //utils.exitWithError(new errors.NotImplementedError());
     var manager = new ConfigManager();
     var config: AppConfig = null;
@@ -188,11 +188,16 @@ export function list(): void {
                 directory = c.directory;
             }
             if (gitDirectoryList.indexOf(directory) === -1) {
-                message += " -- " + colors["red"]("does not exist as git directory");
+                message += " -- " + colors.red("does not exist as git directory");
             }
             console.log(message);
         });
     }).catch((error: errors.BaseError) => {
         utils.exitWithError(error);
     })
+}
+
+// gitlump ls
+export function lsRemote(): void {
+    utils.exitWithError(new errors.NotImplementedError());
 }

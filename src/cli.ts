@@ -1,7 +1,7 @@
 /// <reference path="../typings/tsd.d.ts" />
 
 import program = require("commander");
-import colors = require("ansicolors");
+import colors = require("colors");
 import {exec} from "child_process";
 import async = require("async");
 
@@ -52,11 +52,19 @@ program
     });
 
 program
-    .command("list")
-    .description("Show repositories.")
+    .command("ls")
+    .description("Show cloned repositories.")
     .allowUnknownOption(true)
     .action(() => {
-        commands.list();
+        commands.ls();
+    });
+
+program
+    .command("ls-remote")
+    .description("Show remote repositories.")
+    .allowUnknownOption(true)
+    .action(() => {
+        commands.lsRemote();
     });
 
 program
