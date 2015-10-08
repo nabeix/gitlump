@@ -199,5 +199,35 @@ export function ls(): void {
 
 // gitlump ls
 export function lsRemote(): void {
-    utils.exitWithError(new errors.NotImplementedError());
+    //utils.exitWithError(new errors.NotImplementedError());
+    var manager = new ConfigManager();
+    var config: AppConfig = null;
+    var cloned: string[] = [];
+    manager.loadFromFile(`./${CONFIG_FILENAME}`).then(() => {
+        config = manager.config;
+        var gh = new GitHubConnection(config.endpoint);
+        return gh.getRepositories(config.type, config.name);
+    }).then((list: GitRepository[]) => {
+        for (var i = 0; i < list.length; i++) {
+            console.log(list[i].name);
+        }
+    }).catch((error: errors.BaseError) => {
+        if ((error instanceof errors.AuthFailedError)
+            || (error instanceof errors.AuthRequiredError)) {
+            var message: string = null;
+            if (error instanceof errors.AuthFailedError) {
+                message = "Authentication is failed.";
+            } else {
+                message = `Authentication is required by ${manager.config.endpoint}.`;
+            }
+            console.log(message);
+            prompt.auth().then((value: AuthInfo) => {
+                clone({auth: value});
+            }).catch((error: errors.BaseError) => {
+                utils.exitWithError(error);
+            });
+        } else {
+            utils.exitWithError(error);
+        }
+    });
 }
