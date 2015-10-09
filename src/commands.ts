@@ -208,8 +208,14 @@ export function lsRemote(): void {
         var gh = new GitHubConnection(config.endpoint);
         return gh.getRepositories(config.type, config.name);
     }).then((list: GitRepository[]) => {
+        var cloned = config.cloned;
         for (var i = 0; i < list.length; i++) {
-            console.log(list[i].name);
+            var r = list[i].name;
+            if (cloned.indexOf(r) === -1) {
+                console.log(`${r} (not cloned)`);
+            } else {
+                console.log(r);
+            }
         }
     }).catch((error: errors.BaseError) => {
         if ((error instanceof errors.AuthFailedError)
