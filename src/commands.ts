@@ -198,7 +198,7 @@ export function ls(): void {
 }
 
 // gitlump ls
-export function lsRemote(): void {
+export function lsRemote(arg?: {auth: AuthInfo}): void {
     //utils.exitWithError(new errors.NotImplementedError());
     var manager = new ConfigManager();
     var config: AppConfig = null;
@@ -206,6 +206,9 @@ export function lsRemote(): void {
     manager.loadFromFile(`./${CONFIG_FILENAME}`).then(() => {
         config = manager.config;
         var gh = new GitHubConnection(config.endpoint);
+        if (arg && arg.auth) {
+            gh.auth(arg.auth.username, arg.auth.password);
+        }
         return gh.getRepositories(config.type, config.name);
     }).then((list: GitRepository[]) => {
         var cloned = config.cloned;
@@ -228,7 +231,7 @@ export function lsRemote(): void {
             }
             console.log(message);
             prompt.auth().then((value: AuthInfo) => {
-                clone({auth: value});
+                lsRemote({auth: value});
             }).catch((error: errors.BaseError) => {
                 utils.exitWithError(error);
             });
