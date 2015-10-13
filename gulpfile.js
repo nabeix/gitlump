@@ -14,7 +14,9 @@ gulp.task('compile', function(cb) {
 gulp.task('test', function () {
   return gulp.src('spec/test.js')
     .pipe(jasmine({
-      reporter: new reporters.JUnitXmlReporter()
+        // reporter: new reporters.JUnitXmlReporter(),
+        verbose:true,
+        includeStackTrace: true
     }));
 });
 

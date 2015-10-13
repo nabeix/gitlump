@@ -1,0 +1,8 @@
+{
+    "endpoint": "https://api.github.com/",
+    "type": "user",
+    "name": "test1",
+    "repos": [],
+    "ignore": [],
+    "cloned": []
+}
