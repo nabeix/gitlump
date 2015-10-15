@@ -99,4 +99,19 @@ describe("ConfigManager", function() {
         expect(m.repositoryConfig("foo")).toEqual({name: "foo", protocol: "prot", directory: "foodir"});
         expect(m.repositoryConfig("bar")).toEqual({name: "bar", directory: "bardir"});
     });
+    it("ignored", function() {
+        var m = new ConfigManager();
+        m.load({
+            endpoint: "https://api.github.com/",
+            type: "user",
+            name: "myname",
+            defaultProtocol: "ssh",
+            repos: [{name: "foo", protocol: "prot", directory: "foodir"},
+                    {name: "bar", directory: "bardir"}],
+            ignore: ["foo"],
+            cloned: []
+        });
+        expect(m.ignored("foo")).toBe(true);
+        expect(m.ignored("bar")).toBe(false);
+    });
 });
