@@ -114,4 +114,33 @@ describe("ConfigManager", function() {
         expect(m.ignored("foo")).toBe(true);
         expect(m.ignored("bar")).toBe(false);
     });
+    it("cloned", function() {
+        var m = new ConfigManager();
+        m.load({
+            endpoint: "https://api.github.com/",
+            type: "user",
+            name: "myname",
+            defaultProtocol: "ssh",
+            repos: [],
+            ignore: [],
+            cloned: ["foo", "bar"]
+        });
+        expect(m.cloned("foo")).toBe(true);
+        expect(m.cloned("baz")).toBe(false);
+    });
+    it("clonedDirectories", function() {
+        var m = new ConfigManager();
+        m.load({
+            endpoint: "https://api.github.com/",
+            type: "user",
+            name: "myname",
+            defaultProtocol: "ssh",
+            repos: [{name: "foo", protocol: "prot", directory: "foodir"},
+                    {name: "bar", directory: "bardir"}],
+            ignore: [],
+            cloned: ["foo", "bar", "baz"]
+        });
+        expect(m.clonedDirectories()).toEqual(["foodir", "bardir", "baz"]);
+    });
+
 });
