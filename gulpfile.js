@@ -12,7 +12,7 @@ gulp.task('compile', function(cb) {
 });
 
 gulp.task('test', function () {
-  return gulp.src('spec/test.js')
+  return gulp.src('spec/*[Test].js')
     .pipe(jasmine({
         // reporter: new reporters.JUnitXmlReporter(),
         verbose:true,

@@ -142,5 +142,4 @@ describe("ConfigManager", function() {
         });
         expect(m.clonedDirectories()).toEqual(["foodir", "bardir", "baz"]);
     });
-
 });
