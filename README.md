@@ -10,6 +10,26 @@ $ npm install -g gitlump
 
 ## Usage
 
+```
+  Usage: gitlump [options] [command]
+
+
+  Commands:
+
+    create <type> <name>  Initialize with creating new directory.
+    init <type> <name>    Initialize exisiting directory.
+    clone                 Clone repositories.
+    pull                  Pull repositories.
+    exec                  Run git command.
+    ls                    Show cloned repositories.
+    ls-remote             Show remote repositories.
+
+  Options:
+
+    -h, --help     output usage information
+    -V, --version  output the version number
+```
+
 ### Initialize
 
 #### User repositries
@@ -69,7 +89,6 @@ $ gitlump clone
 ```
 
 `gitlump clone` automatically clones all repositories.
-
 
 ### Pull
 
