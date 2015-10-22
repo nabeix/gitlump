@@ -44,19 +44,26 @@ function _clone(path: string, args: CloneConfig[]): Promise<void> {
 function _exec(dirs: string[], command: string): Promise<void> {
     var index = 0;
     return new Promise<void>((resolve, reject) => {
+        var next = () => {
+            index++;
+            if (index < dirs.length) {
+                execFunc(dirs[index]);
+            } else {
+                resolve();
+            }
+        };
         var execFunc = (path: string) => {
             var startMessage = `>> git ${command} in \'${path}\'`;
             console.log(colors["green"](startMessage));
             gitCommands.exec(path, command).then((result) => {
                 console.log(result.stdout);
-                index++;
-                if (index < dirs.length) {
-                    execFunc(dirs[index]);
-                } else {
-                    resolve();
+                next();
+            }).catch((error: errors.GitCommandExecError) => {
+                console.log(colors["red"]("[ERROR] ") + error.message);
+                if (error.stderr) {
+                    console.log(error.stderr);
                 }
-            }).catch((error) => {
-                reject(error);
+                next();
             });
         };
         execFunc(dirs[0]);

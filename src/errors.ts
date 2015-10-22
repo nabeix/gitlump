@@ -65,3 +65,11 @@ export class UnknownProtocolError extends BaseError {
         super(message);
     }
 }
+
+export class GitCommandExecError extends BaseError {
+    stderr: string;
+    constructor(message: string, stderr?: string) {
+        super(message);
+        this.stderr = stderr;
+    }
+}

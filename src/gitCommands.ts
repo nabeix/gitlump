@@ -3,6 +3,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import * as ChildProcess from "child_process";
+import * as errors from "./errors";
 
 export interface ExecResult {
     command: string;
@@ -33,11 +34,11 @@ export function exec(wd: string, arg: string): Promise<ExecResult> {
     return new Promise<ExecResult>((resolve, reject) => {
         fs.stat(wd, (error, stat) => {
             if (error) {
-                reject(new Error(`Directory ${wd} not found.`));
+                reject(new errors.GitCommandExecError(`Directory ${wd} not found.`));
             } else {
                 ChildProcess.exec(cmd, {cwd: wd}, (error: Error, stdout: Buffer, stderr: Buffer) => {
                     if (error) {
-                        reject(new Error(`Failed to exec: ${cmd}`));
+                        reject(new errors.GitCommandExecError(`Failed to exec: ${cmd}`, stderr.toString()));
                     } else {
                         resolve({
                             command: cmd,
