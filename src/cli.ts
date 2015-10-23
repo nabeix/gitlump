@@ -54,7 +54,6 @@ program
 program
     .command("ls")
     .description("Show cloned repositories.")
-    .allowUnknownOption(true)
     .action(() => {
         commands.ls();
     });
@@ -62,7 +61,6 @@ program
 program
     .command("ls-remote")
     .description("Show remote repositories.")
-    .allowUnknownOption(true)
     .action(() => {
         commands.lsRemote();
     });
