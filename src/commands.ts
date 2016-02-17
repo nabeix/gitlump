@@ -178,7 +178,6 @@ export function exec(command: string): void {
 
 // gitlump ls
 export function ls(): void {
-    //utils.exitWithError(new errors.NotImplementedError());
     var manager = new ConfigManager();
     var config: AppConfig = null;
     manager.loadFromFile(`./${CONFIG_FILENAME}`).then(() => {
@@ -206,7 +205,6 @@ export function ls(): void {
 
 // gitlump ls
 export function lsRemote(arg?: {auth: AuthInfo}): void {
-    //utils.exitWithError(new errors.NotImplementedError());
     var manager = new ConfigManager();
     var config: AppConfig = null;
     var cloned: string[] = [];
