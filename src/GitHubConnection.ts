@@ -23,7 +23,6 @@ export default class GitHubConnection {
         this.authData = null;
     }
 
-    // TODO: store OAuth token in .gitlump.json and use it(TBD)
     auth(user: string, password: string): void {
         this.authData = {user: user, pass: password};
     }

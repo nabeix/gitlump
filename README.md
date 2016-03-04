@@ -123,6 +123,28 @@ $ gitlump exec checkout master
 $ gitlump exec commit -m "update"
 ```
 
+### Access token
+
+An access token is needed if you have private repositories.
+
+To use access token, set `useAccessToken` in `.gitlump.json` to `true`.
+
+And set [your access token](https://help.github.com/articles/creating-an-access-token-for-command-line-use/) to the environment variable `GITLUMP_ACCESS_TOKEN`.
+
+```
+export GITLUMP_ACCESS_TOKEN=your-access-token
+```
+
+If set the token to other environment variables:
+
+```
+"useAccessToken": "MY_TOKEN_VARIABLE_NAME"
+```
+
+```
+export MY_TOKEN_VARIABLE_NAME=your-access-token
+```
+
 ## Contribution
 
 1. Fork it ( http://github.com/nabeix/gitlump )

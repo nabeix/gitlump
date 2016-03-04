@@ -70,6 +70,14 @@ function _exec(dirs: string[], command: string): Promise<void> {
     });
 }
 
+function _accessToken(manager: ConfigManager): string {
+    let accessToken = manager.accessToken();
+    if (manager.config.useAccessToken && !accessToken) {
+        console.log("access token is empty.");
+    }
+    return accessToken;
+}
+
 // gitlump create
 export function create(type: string, name: string): void {
     var manager: ConfigManager = null;
@@ -105,7 +113,7 @@ export function clone(arg?: {auth: AuthInfo}): void {
     var cloned: string[] = [];
     manager.loadFromFile(`./${CONFIG_FILENAME}`).then(() => {
         config = manager.config;
-        var gh = new GitHubConnection(config.endpoint, manager.accessToken());
+        var gh = new GitHubConnection(config.endpoint, _accessToken(manager));
         if (arg && arg.auth) {
             gh.auth(arg.auth.username, arg.auth.password);
         }
@@ -210,7 +218,7 @@ export function lsRemote(arg?: {auth: AuthInfo}): void {
     var cloned: string[] = [];
     manager.loadFromFile(`./${CONFIG_FILENAME}`).then(() => {
         config = manager.config;
-        var gh = new GitHubConnection(config.endpoint, manager.accessToken());
+        var gh = new GitHubConnection(config.endpoint, _accessToken(manager));
         if (arg && arg.auth) {
             gh.auth(arg.auth.username, arg.auth.password);
         }
