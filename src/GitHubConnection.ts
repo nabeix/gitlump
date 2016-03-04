@@ -102,6 +102,10 @@ export default class GitHubConnection {
         if (this.authData) {
             option.auth = this.authData;
         }
+
+        if (this.accessToken) {
+            option.headers["Authorization"] = `token ${this.accessToken}`;
+        }
         return option;
     }
 
