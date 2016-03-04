@@ -14,6 +14,7 @@ export interface AppConfig {
     type: string;
     name: string;
     defaultProtocol: string;
+    useAccessToken: boolean|string;
     repos: RepositoryConfig[];
     ignore: string[];
     cloned: string[];

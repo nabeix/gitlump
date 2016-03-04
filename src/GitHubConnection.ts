@@ -14,10 +14,12 @@ interface RequestResult {
 
 export default class GitHubConnection {
     endpoint: string;
+    accessToken: string;
     authData: {user: string, pass: string};
 
-    constructor(endpoint: string) {
+    constructor(endpoint: string, accessToken: string) {
         this.endpoint = endpoint;
+        this.accessToken = accessToken;
         this.authData = null;
     }
 

@@ -23,6 +23,7 @@ describe("ConfigManager", function() {
                 type: "user",
                 name: "myname",
                 defaultProtocol: "ssh",
+                useAccessToken: false,
                 repos: [],
                 ignore: [],
                 cloned: []
@@ -141,5 +142,54 @@ describe("ConfigManager", function() {
             cloned: ["foo", "bar", "baz"]
         });
         expect(m.clonedDirectories()).toEqual(["foodir", "bardir", "baz"]);
+    });
+    it("useAccessToken - false", function() {
+        var m = new ConfigManager();
+        m.load({
+            endpoint: "https://api.github.com/",
+            type: "user",
+            name: "myname",
+            defaultProtocol: "ssh",
+            useAccessToken: false,
+            repos: [{name: "foo", protocol: "prot", directory: "foodir"},
+                    {name: "bar", directory: "bardir"}],
+            ignore: [],
+            cloned: ["foo", "bar", "baz"]
+        });
+        process.env["GITLUMP_ACCESS_TOKEN"] = "foo";
+        expect(m.accessToken()).toBe(null);
+    });
+    it("useAccessToken - true", function() {
+        var m = new ConfigManager();
+        m.load({
+            endpoint: "https://api.github.com/",
+            type: "user",
+            name: "myname",
+            defaultProtocol: "ssh",
+            useAccessToken: true,
+            repos: [{name: "foo", protocol: "prot", directory: "foodir"},
+                    {name: "bar", directory: "bardir"}],
+            ignore: [],
+            cloned: ["foo", "bar", "baz"]
+        });
+        process.env["GITLUMP_ACCESS_TOKEN"] = "foo";
+        expect(m.accessToken()).toEqual("foo");
+    });
+    it("useAccessToken - custom", function() {
+        var m = new ConfigManager();
+        m.load({
+            endpoint: "https://api.github.com/",
+            type: "user",
+            name: "myname",
+            defaultProtocol: "ssh",
+            useAccessToken: "MY_ACCESS_TOKEN",
+            repos: [{name: "foo", protocol: "prot", directory: "foodir"},
+                    {name: "bar", directory: "bardir"}],
+            ignore: [],
+            cloned: ["foo", "bar", "baz"]
+        });
+        process.env["MY_ACCESS_TOKEN"] = "mytoken";
+        process.env["GITLUMP_ACCESS_TOKEN"] = "foo";
+        expect(m.accessToken()).toEqual("mytoken");
     });
 });
