@@ -14,14 +14,15 @@ interface RequestResult {
 
 export default class GitHubConnection {
     endpoint: string;
+    accessToken: string;
     authData: {user: string, pass: string};
 
-    constructor(endpoint: string) {
+    constructor(endpoint: string, accessToken: string = null) {
         this.endpoint = endpoint;
+        this.accessToken = accessToken;
         this.authData = null;
     }
 
-    // TODO: store OAuth token in .gitlump.json and use it(TBD)
     auth(user: string, password: string): void {
         this.authData = {user: user, pass: password};
     }
@@ -99,6 +100,10 @@ export default class GitHubConnection {
         }
         if (this.authData) {
             option.auth = this.authData;
+        }
+
+        if (this.accessToken) {
+            option.headers["Authorization"] = `token ${this.accessToken}`;
         }
         return option;
     }

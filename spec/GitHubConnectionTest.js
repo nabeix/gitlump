@@ -11,5 +11,6 @@ describe("GitHubConnection", function() {
     it("constructor", function() {
         expect(con.endpoint).toBe("https://api.github.com/");
         expect(con.authData).toBe(null);
+        expect(con.accessToken).toBe(null);
     });
 });

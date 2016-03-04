@@ -63,6 +63,7 @@ $ gitlump init <type> <name>
   "type": "user",
   "name": "nabeix",
   "defaultProtocol": "ssh",
+  "useAccessToken": false,
   "repos": [],
   "ignore": [],
   "cloned": []
@@ -70,10 +71,13 @@ $ gitlump init <type> <name>
 ```
 
 * `endpoint` GitHub API Endpoint (default https://api.github.com/)
-  * If use GitHub Enterprise: http(s)://hostname/api/v3/
+    * If use GitHub Enterprise: http(s)://hostname/api/v3/
 * `type` user|org
 * `name` Github user or organization name
 * `defaultProtocol` ssh|https (default ssh)
+* `useAccessToken` true|false|string (default false)
+    * If set true, read an access token from the environment variable `GITLUMP_ACCESS_TOKEN`.
+    * If set an environment variable name, read an access token from the variable.
 * `repos` A list of repository specific settings (default blank)
     * Example: `[{"name": "my-repo", "protocol": "https", "directory": "my-repo-directory"}]`
         * `name` repository name
@@ -117,6 +121,28 @@ $ gitlump exec checkout master
 
 ```
 $ gitlump exec commit -m "update"
+```
+
+### Access token
+
+An access token is needed if you have private repositories.
+
+To use access token, set `useAccessToken` in `.gitlump.json` to `true`.
+
+And set [your access token](https://help.github.com/articles/creating-an-access-token-for-command-line-use/) to the environment variable `GITLUMP_ACCESS_TOKEN`.
+
+```
+export GITLUMP_ACCESS_TOKEN=your-access-token
+```
+
+If set the token to other environment variables:
+
+```
+"useAccessToken": "MY_TOKEN_VARIABLE_NAME"
+```
+
+```
+export MY_TOKEN_VARIABLE_NAME=your-access-token
 ```
 
 ## Contribution

@@ -6,7 +6,8 @@ import * as errors from "./errors";
 
 import {RepositoryConfig, AppConfig, GitRepository, CloneConfig} from "./interfaces";
 
-var DEFAULT_ENDPOINT = "https://api.github.com/";
+const DEFAULT_ENDPOINT = "https://api.github.com/";
+const DEFAULT_ACCESS_TOKEN_ENVVAR = "GITLUMP_ACCESS_TOKEN";
 
 export default class ConfigManager {
     config: AppConfig;
@@ -26,6 +27,7 @@ export default class ConfigManager {
                 type: type,
                 name: name,
                 defaultProtocol: "ssh",
+                useAccessToken: false,
                 repos: [],
                 ignore: [],
                 cloned: []
@@ -74,6 +76,16 @@ export default class ConfigManager {
             result = config;
         });
         return result;
+    }
+
+    accessToken(): string {
+        if (typeof this.config.useAccessToken === "string") {
+            return process.env[<string>this.config.useAccessToken];
+        }
+        if (!this.config.useAccessToken) {
+            return null;
+        }
+        return process.env[DEFAULT_ACCESS_TOKEN_ENVVAR];
     }
 
     cloneConfig(repository: GitRepository): CloneConfig {
