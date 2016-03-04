@@ -1,6 +1,6 @@
 {
   "name": "gitlump",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "A command line tool to manage all git repositories of user or organization.",
   "main": "index.js",
   "bin": {
