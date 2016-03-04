@@ -17,7 +17,7 @@ export default class GitHubConnection {
     accessToken: string;
     authData: {user: string, pass: string};
 
-    constructor(endpoint: string, accessToken: string) {
+    constructor(endpoint: string, accessToken: string = null) {
         this.endpoint = endpoint;
         this.accessToken = accessToken;
         this.authData = null;
