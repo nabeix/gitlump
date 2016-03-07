@@ -138,11 +138,30 @@ export GITLUMP_ACCESS_TOKEN=your-access-token
 If set the token to other environment variables:
 
 ```
-"useAccessToken": "MY_TOKEN_VARIABLE_NAME"
+"useAccessToken": "TOKEN_VARIABLE_NAME"
 ```
 
 ```
-export MY_TOKEN_VARIABLE_NAME=your-access-token
+export TOKEN_VARIABLE_NAME=your-access-token
+```
+
+It is useful to use multiple access tokens.
+
+```
+export GITLUMP_ACCESS_TOKEN_FOR_GITHUB=github_com_token
+export GITLUMP_ACCESS_TOKEN_FOR_GITHUB_ENTERPRISE=github_enterprise_token
+```
+
+In `.gitlump.json` for github.com repositories: 
+
+```
+"useAccessToken": "GITLUMP_ACCESS_TOKEN_FOR_GITHUB"
+```
+
+In `.gitlump.json` for GitHub Enterprise repositories: 
+
+```
+"useAccessToken": "GITLUMP_ACCESS_TOKEN_FOR_GITHUB_ENTERPRISE"
 ```
 
 ## Contribution
