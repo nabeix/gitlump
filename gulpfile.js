@@ -4,7 +4,7 @@ var jasmine = require('gulp-jasmine');
 var reporters = require('jasmine-reporters');
 
 gulp.task('compile', function(cb) {
-  exec('node_modules/typescript/bin/tsc', function (err, stdout, stderr) {
+  exec('tsc', function (err, stdout, stderr) {
     if (stdout) console.log(stdout);
     if (stderr) console.log(stderr);
     cb(err);
