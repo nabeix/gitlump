@@ -1,5 +1,3 @@
-/// <reference path="../typings/tsd.d.ts" />
-
 import program = require("commander");
 import colors = require("colors");
 import {exec} from "child_process";

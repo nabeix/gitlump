@@ -1,5 +1,3 @@
-/// <reference path="../typings/tsd.d.ts" />
-
 import * as fs from "fs";
 import * as path from "path";
 import * as ChildProcess from "child_process";
@@ -36,14 +34,14 @@ export function exec(wd: string, arg: string): Promise<ExecResult> {
             if (error) {
                 reject(new errors.GitCommandExecError(`Directory ${wd} not found.`));
             } else {
-                ChildProcess.exec(cmd, {cwd: wd}, (error: Error, stdout: Buffer, stderr: Buffer) => {
+                ChildProcess.exec(cmd, {cwd: wd}, (error: Error, stdout: string, stderr: string) => {
                     if (error) {
                         reject(new errors.GitCommandExecError(`Failed to exec: ${cmd}`, stderr.toString()));
                     } else {
                         resolve({
                             command: cmd,
-                            stdout: stdout.toString(),
-                            stderr: stderr.toString()
+                            stdout: stdout,
+                            stderr: stderr
                         });
                     }
                 });

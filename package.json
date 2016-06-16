@@ -24,12 +24,18 @@
   "author": "Yusuke Watanabe",
   "license": "MIT",
   "devDependencies": {
+    "@types/async": "^1.4.22-alpha",
+    "@types/colors": "^0.6.22-alpha",
+    "@types/commander": "^2.3.22-alpha",
+    "@types/node": "^4.0.22-alpha",
+    "@types/promptly": "^1.1.21-alpha",
+    "@types/request": "0.0.21-alpha",
     "gulp": "^3.9.0",
     "gulp-jasmine": "^2.1.0",
     "gulp-shell": "^0.5.2",
     "jasmine-reporters": "^2.0.7",
     "mkdirp": "^0.5.1",
-    "typescript": "^1.8.10"
+    "typescript": "^1.9.0-dev.20160616-1.0"
   },
   "dependencies": {
     "async": "^1.4.2",

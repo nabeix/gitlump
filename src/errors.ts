@@ -1,6 +1,4 @@
-/// <reference path="../typings/tsd.d.ts" />
-
-export  class BaseError implements Error {
+export class BaseError implements Error {
     message: string;
     name: string;
     rawError: Error|NodeJS.ErrnoException;

@@ -9,6 +9,7 @@
     "sourceMap": false
   },
   "files": [
+    "node_modules/typescript/lib/lib.es6.d.ts",
     "src/interfaces.ts",
     "src/errors.ts",
     "src/gitCommands.ts",
