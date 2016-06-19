@@ -1,5 +1,5 @@
-import request = require("request");
-import http = require("http");
+import * as request from "request";
+import * as http from "http";
 
 import {GitRepository} from "./interfaces";
 

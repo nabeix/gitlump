@@ -1,10 +1,9 @@
-import program = require("commander");
-import colors = require("colors");
+import * as program from "commander";
+import * as colors from "colors";
 import {exec} from "child_process";
-import async = require("async");
 
-import utils = require("./utils");
-import commands = require("./commands");
+import * as utils from "./utils";
+import * as commands from "./commands";
 
 var version = require("../package.json").version;
 

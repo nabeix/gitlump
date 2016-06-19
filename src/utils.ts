@@ -5,7 +5,6 @@ import * as colors from "colors";
 import * as errors from "./errors";
 import {AppConfig} from "./interfaces";
 
-
 export function exitWithError(error: errors.BaseError) {
     console.log(colors["red"]("[ERROR] ") + error.message);
     process.exit(1);
