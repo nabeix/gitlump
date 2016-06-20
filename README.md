@@ -164,6 +164,20 @@ In `.gitlump.json` for GitHub Enterprise repositories:
 "useAccessToken": "GITLUMP_ACCESS_TOKEN_FOR_GITHUB_ENTERPRISE"
 ```
 
+## Development
+
+### Build
+
+```
+npm run build
+```
+
+### Test
+
+```
+npm test
+```
+
 ## Contribution
 
 1. Fork it ( http://github.com/nabeix/gitlump )
