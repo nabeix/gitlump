@@ -44,16 +44,16 @@ export function gitDirectoryList(basePath?: string): Promise<string[]> {
     if (!basePath) {
         basePath = process.cwd();
     }
-    var result: string[] = [];
+    const result: string[] = [];
     return new Promise<string[]>((resolve, reject) => {
         fs.readdir(basePath, (err, fileNames) => {
-            var finished = 0;
+            let finished = 0;
             if (err) {
                 reject(err);
                 return;
             }
             async.each(fileNames, (fileName,  callback) => {
-                var path = `${basePath}/${fileName}`;
+                const path = `${basePath}/${fileName}`;
                 isGitDirectory(path).then((flag) => {
                     finished++;
                     if (flag) {

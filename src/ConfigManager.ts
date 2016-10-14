@@ -66,7 +66,7 @@ export default class ConfigManager {
         if (!this.config) {
             return null;
         }
-        var result: RepositoryConfig = null;
+        let result: RepositoryConfig = null;
         this.config.repos.forEach((config: RepositoryConfig) => {
             if (config.name !== repoName) {
                 return;
@@ -87,9 +87,9 @@ export default class ConfigManager {
     }
 
     cloneConfig(repository: GitRepository): CloneConfig {
-        var protocol: string = null;
-        var directory: string = null;
-        var repoConfig = this.repositoryConfig(repository.name);
+        let protocol: string = null;
+        let directory: string = null;
+        const repoConfig = this.repositoryConfig(repository.name);
         if (repoConfig) {
             directory = repoConfig.directory;
             protocol = repoConfig.protocol;
@@ -100,7 +100,7 @@ export default class ConfigManager {
         if (!directory) {
             directory = repository.name;
         }
-        var url = protocol === "https" ? repository.httpsUrl : repository.sshUrl;
+        const url = protocol === "https" ? repository.httpsUrl : repository.sshUrl;
         return {
             url: url,
             directory: directory,
@@ -117,12 +117,12 @@ export default class ConfigManager {
     }
 
     clonedDirectories(): string[] {
-        var result: string[] = [];
+        const result: string[] = [];
         this.config.cloned.forEach((repoName) => {
             if (this.ignored(repoName)) {
                 return;
             }
-            var c = this.repositoryConfig(repoName);
+            const c = this.repositoryConfig(repoName);
             if (c && c.directory) {
                 result.push(c.directory);
             } else {

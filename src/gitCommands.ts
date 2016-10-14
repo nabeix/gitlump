@@ -11,10 +11,10 @@ export interface ExecResult {
 
 export function clone(wd: string, url: string, directory: string): Promise<ExecResult> {
     return new Promise<ExecResult>((resolve, reject) => {
-        var targetDir = path.resolve(`${wd}/${directory}`);
+        const targetDir = path.resolve(`${wd}/${directory}`);
         fs.stat(targetDir, (error, stat) => {
             if (error) {
-                var cmd: string = `clone ${url} ${directory}`;
+                const cmd: string = `clone ${url} ${directory}`;
                 exec(wd, cmd).then((result) => {
                     resolve(result);
                 }).catch((error) => {
@@ -28,7 +28,7 @@ export function clone(wd: string, url: string, directory: string): Promise<ExecR
 }
 
 export function exec(wd: string, arg: string): Promise<ExecResult> {
-    var cmd: string = `git ${arg}`;
+    const cmd: string = `git ${arg}`;
     return new Promise<ExecResult>((resolve, reject) => {
         fs.stat(wd, (error, stat) => {
             if (error) {

@@ -5,7 +5,7 @@ import {exec} from "child_process";
 import * as utils from "./utils";
 import * as commands from "./commands";
 
-var version = require("../package.json").version;
+const version = require("../package.json").version;
 
 program
     .version(version);
@@ -43,8 +43,8 @@ program
     .description("Run git command.")
     .allowUnknownOption(true)
     .action((cmd, option) => {
-        var index = process.argv.indexOf("exec");
-        var opts = process.argv.slice(index + 1).join(" ");
+        const index = process.argv.indexOf("exec");
+        const opts = process.argv.slice(index + 1).join(" ");
         commands.exec(opts);
     });
 

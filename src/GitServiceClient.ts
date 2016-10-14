@@ -32,8 +32,8 @@ export default class GitHubClient implements GitServiceClient {
 
     getRepositories(type: string, name: string): Promise<GitRepository[]> {
         return new Promise<GitRepository[]>((resolve, reject) => {
-            var url: string = null;
-            var repositories: GitRepository[] = null;
+            let url: string = null;
+            let repositories: GitRepository[] = null;
             if (type === "user") {
                 url = this.requestURL(`users/${name}/repos`);
             } else if (type === "org") {
@@ -41,16 +41,16 @@ export default class GitHubClient implements GitServiceClient {
             } else {
                 reject(new errors.InvalidTypeError("Type `${type}` is unknown."));
             }
-            var option = this.createRequestOption(url);
+            const option = this.createRequestOption(url);
             this.requestGet(option).then((result) => {
                 repositories = this.createRepositorytList(result.body);
                 if (result.response.statusCode === 200) {
-                    var pageUrls = result.response.headers["link"] ? this.createPageUrls(result.response.headers["link"]) : null;
+                    const pageUrls = result.response.headers["link"] ? this.createPageUrls(result.response.headers["link"]) : null;
                     if (pageUrls && pageUrls.length > 1 ) {
-                        var nextRequests: Promise<RequestResult>[] = [];
+                        const nextRequests: Promise<RequestResult>[] = [];
                         // NOTE: The first url is already done in the first this.requestGet().
-                        for (var i = 1; i < pageUrls.length; i++) {
-                            var opt = this.createRequestOption(pageUrls[i]);
+                        for (let i = 1; i < pageUrls.length; i++) {
+                            const opt = this.createRequestOption(pageUrls[i]);
                             nextRequests.push(this.requestGet(opt));
                         }
                         return Promise.all(nextRequests);
@@ -65,8 +65,8 @@ export default class GitHubClient implements GitServiceClient {
                     reject(new errors.BaseError("Failed to get repository list."));
                 }
             }).then((result) => {
-                for (var i = 0; i < result.length; i++) {
-                    var list = this.createRepositorytList(result[i].body);
+                for (let i = 0; i < result.length; i++) {
+                    const list = this.createRepositorytList(result[i].body);
                     Array.prototype.push.apply(repositories, list);
                 }
                 resolve(repositories);
@@ -89,7 +89,7 @@ export default class GitHubClient implements GitServiceClient {
     }
 
     private createRequestOption(url: string, additionalHeader?: any): request.Options {
-        var option: request.Options = {
+        const option: request.Options = {
             url: url,
             json: true,
             headers: {
@@ -97,7 +97,7 @@ export default class GitHubClient implements GitServiceClient {
             }
         };
         if (additionalHeader) {
-            for (var key in additionalHeader) {
+            for (let key in additionalHeader) {
                 option.headers[key] = additionalHeader[key];
             }
         }
@@ -113,15 +113,15 @@ export default class GitHubClient implements GitServiceClient {
 
     private createPageUrls(linkText: string): string[] {
         // https://developer.github.com/guides/traversing-with-pagination/
-        var totalPageNum = 0;
-        var lastUrl: string = null;
-        var splited = linkText.split(",");
-        for (var i = 0; i < splited.length; i++) {
-            var lr = splited[i].replace(/\s+/g, "").split(";"); // ["<link>", "rel="\"last\""]
-            var url = lr[0].substring(1, lr[0].length - 1);
-            var rel = /rel=\"(.+)\"/.exec(lr[1])[1];
+        let totalPageNum = 0;
+        let lastUrl: string = null;
+        const splited = linkText.split(",");
+        for (let i = 0; i < splited.length; i++) {
+            const lr = splited[i].replace(/\s+/g, "").split(";"); // ["<link>", "rel="\"last\""]
+            const url = lr[0].substring(1, lr[0].length - 1);
+            const rel = /rel=\"(.+)\"/.exec(lr[1])[1];
             if (rel === "last") {
-                var parsed = /page=(\d+)/.exec(url); // ["page=20", 20]
+                const parsed = /page=(\d+)/.exec(url); // ["page=20", 20]
                 totalPageNum = Number(parsed[1]);
                 lastUrl = url;
                 break;
@@ -130,17 +130,17 @@ export default class GitHubClient implements GitServiceClient {
         if (!lastUrl) {
             return null;
         }
-        var result: string[] = [];
-        for (var i = 1; i <= totalPageNum; i++) {
+        const result: string[] = [];
+        for (let i = 1; i <= totalPageNum; i++) {
             result.push(lastUrl.replace(`page=${totalPageNum}`, `page=${i}`));
         }
         return result;
     }
 
     private createRepositorytList(body: any): GitRepository[] {
-        var result: GitRepository[] = [];
-        for (var i = 0; i < body.length; i++) {
-            var repo = body[i];
+        const result: GitRepository[] = [];
+        for (let i = 0; i < body.length; i++) {
+            const repo = body[i];
             result.push({
                 name: repo.name,
                 sshUrl: repo.ssh_url,
