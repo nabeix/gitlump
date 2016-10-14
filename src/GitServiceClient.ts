@@ -10,10 +10,15 @@ interface RequestResult {
     response: http.IncomingMessage;
 }
 
-export default class GitHubConnection {
-    endpoint: string;
-    accessToken: string;
-    authData: {user: string, pass: string};
+interface GitServiceClient {
+    auth(user: string, password: string): void;
+    getRepositories(type: string, name: string): Promise<GitRepository[]>;
+}
+
+export default class GitHubClient implements GitServiceClient {
+    private endpoint: string;
+    private accessToken: string;
+    private authData: {user: string, pass: string};
 
     constructor(endpoint: string, accessToken: string = null) {
         this.endpoint = endpoint;

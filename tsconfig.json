@@ -13,7 +13,7 @@
     "src/interfaces.ts",
     "src/errors.ts",
     "src/gitCommands.ts",
-    "src/GitHubConnection.ts",
+    "src/GitServiceClient.ts",
     "src/ConfigManager.ts",
     "src/prompt.ts",
     "src/commands.ts",

@@ -8,7 +8,7 @@ import * as gitCommands from "./gitCommands";
 import ConfigManager from "./ConfigManager";
 
 import {AuthInfo, RepositoryConfig, AppConfig, GitRepository, CloneConfig} from "./interfaces";
-import GitHubConnection from "./GitHubConnection";
+import GitHubClient from "./GitServiceClient";
 
 var CONFIG_FILENAME = ".gitlump.json";
 
@@ -111,7 +111,7 @@ export function clone(arg?: {auth: AuthInfo}): void {
     var cloned: string[] = [];
     manager.loadFromFile(`./${CONFIG_FILENAME}`).then(() => {
         config = manager.config;
-        var gh = new GitHubConnection(config.endpoint, _accessToken(manager));
+        var gh = new GitHubClient(config.endpoint, _accessToken(manager));
         if (arg && arg.auth) {
             gh.auth(arg.auth.username, arg.auth.password);
         }
@@ -216,7 +216,7 @@ export function lsRemote(arg?: {auth: AuthInfo}): void {
     var cloned: string[] = [];
     manager.loadFromFile(`./${CONFIG_FILENAME}`).then(() => {
         config = manager.config;
-        var gh = new GitHubConnection(config.endpoint, _accessToken(manager));
+        var gh = new GitHubClient(config.endpoint, _accessToken(manager));
         if (arg && arg.auth) {
             gh.auth(arg.auth.username, arg.auth.password);
         }
