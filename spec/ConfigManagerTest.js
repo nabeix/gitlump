@@ -1,195 +1,200 @@
-var fs = require("fs");
-var mkdirp = require("mkdirp");
-var ConfigManager = require('../lib/ConfigManager').default;
-var errors = require("../lib/errors");
+import test from "ava";
+import * as fs from "fs";
+import mkdirp from "mkdirp";
+import ConfigManager from "../lib/ConfigManager";
+import * as  errors from "../lib/errors";
 
-describe("ConfigManager", function() {
-    var manager = null;
-    beforeEach(function() {
-        manager = new ConfigManager();
+test.beforeEach(t => {
+    t.context.manager = new ConfigManager();
+});
+
+test("constructor", t => {
+    var m = new ConfigManager();
+    t.is(m.config, undefined);
+});
+
+test("constructor with config", t => {
+    var config = {foo: "foo"};
+    var m = new ConfigManager(config);
+    t.deepEqual(m.config, config);
+});
+
+test("createConfig", async t => {
+    const config = await ConfigManager.createConfig("user", "myname");
+    t.deepEqual(config, {
+        endpoint: "https://api.github.com/",
+        type: "user",
+        name: "myname",
+        defaultProtocol: "ssh",
+        useAccessToken: false,
+        repos: [],
+        ignore: [],
+        cloned: []
     });
-    it("constructor", function() {
-        expect(manager.config).toBe(undefined);
+});
+
+test("load", t => {
+    var config = {foo: "foo"};
+    var m = new ConfigManager();
+    m.load(config);
+    t.deepEqual(m.config, config);
+});
+
+test("loadFromFile", async t => {
+    var m = new ConfigManager();
+    const config = await m.loadFromFile("./spec/data/config1.json");
+    t.deepEqual(config, {
+        endpoint: "https://api.github.com/",
+        type: "user",
+        name: "test1",
+        repos: [],
+        ignore: [],
+        cloned: []
     });
-    it("constructor with config", function() {
-        var config = {foo: "foo"};
-        var m = new ConfigManager(config);
-        expect(m.config).toBe(config);
-    });
-    it("createConfig", function(done) {
-        ConfigManager.createConfig("user", "myname").then(function(config) {
-            expect(config).toEqual({
-                endpoint: "https://api.github.com/",
-                type: "user",
-                name: "myname",
-                defaultProtocol: "ssh",
-                useAccessToken: false,
-                repos: [],
-                ignore: [],
-                cloned: []
-            });
-            done();
-        });
-    });
-    it("load", function() {
-        var config = {foo: "foo"};
-        var m = new ConfigManager();
-        m.load(config);
-        expect(m.config).toBe(config);
-    });
-    it("loadFromFile", function(done) {
-        var m = new ConfigManager();
-        m.loadFromFile("./spec/data/config1.json").then(function(config) {
-            expect(config).toEqual({
-                endpoint: "https://api.github.com/",
-                type: "user",
-                name: "test1",
-                repos: [],
-                ignore: [],
-                cloned: []
-            });
-            done();
-        });
-    });
-    it("loadFromFile - error", function(done) {
-        var m = new ConfigManager();
-        m.loadFromFile("./spec/data/not-exists.json").then(function(config) {
-            done.fail("should be catch error.");
-        }).catch(function(error) {
-            expect(error instanceof errors.ReadFileError).toBe(true);
-            done();
-        });;
-    });
-    it("writeToFile", function(done) {
-        mkdirp("./tmp", function(error) {
+});
+
+test("loadFromFile - error", async t => {
+    var m = new ConfigManager();
+    await t.throws(m.loadFromFile("./spec/data/not-exists.json"), errors.ReadFileError);
+});
+
+test("writeToFile", async t => {
+    await new Promise((resolve, reject) => {
+        mkdirp("./tmp", error => {
             if (error) {
-                done.fail(error);
+                return reject(error);
             }
-            var file = "./tmp/writeToFileTest.json";
-            fs.unlinkSync(file);
-            var m = new ConfigManager();
-            m.load({f: "foo", b: "bar"});
-            m.writeToFile(file).then(function() {
-                done();
-            });
+            resolve();
         });
     });
-    it("writeToFile - error", function(done) {
-        var m = new ConfigManager();
-        m.load({f: "foo", b: "bar"});
-        m.writeToFile("./not-exists-directory/writeToFileTest.json").then(function() {
-            done.fail("should be catch error.");
-        }).catch(function(error) {
-            expect(error instanceof errors.WriteFileError).toBe(true);
-            done();
-        });
+    var file = "./tmp/writeToFileTest.json";
+    try {
+        fs.unlinkSync(file);
+    } catch (e) {
+        // nothing to do
+    }
+    var m = new ConfigManager();
+    m.load({f: "foo", b: "bar"});
+    await t.notThrows(m.writeToFile(file));
+});
+
+test("writeToFile - error", async t => {
+    var m = new ConfigManager();
+    m.load({f: "foo", b: "bar"});
+    await t.throws(m.writeToFile("./not-exists-directory/writeToFileTest.json"), errors.WriteFileError);
+});
+
+test("repositoryConfig", t => {
+    var m = new ConfigManager();
+    m.load({
+        endpoint: "https://api.github.com/",
+        type: "user",
+        name: "myname",
+        defaultProtocol: "ssh",
+        repos: [{name: "foo", protocol: "prot", directory: "foodir"},
+                {name: "bar", directory: "bardir"}],
+        ignore: [],
+        cloned: []
     });
-    it("repositoryConfig", function() {
-        var m = new ConfigManager();
-        m.load({
-            endpoint: "https://api.github.com/",
-            type: "user",
-            name: "myname",
-            defaultProtocol: "ssh",
-            repos: [{name: "foo", protocol: "prot", directory: "foodir"},
-                    {name: "bar", directory: "bardir"}],
-            ignore: [],
-            cloned: []
-        });
-        expect(m.repositoryConfig("baz")).toBe(null);
-        expect(m.repositoryConfig("foo")).toEqual({name: "foo", protocol: "prot", directory: "foodir"});
-        expect(m.repositoryConfig("bar")).toEqual({name: "bar", directory: "bardir"});
+    t.is(m.repositoryConfig("baz"), null);
+    t.deepEqual(m.repositoryConfig("foo"), {name: "foo", protocol: "prot", directory: "foodir"});
+    t.deepEqual(m.repositoryConfig("bar"), {name: "bar", directory: "bardir"});
+});
+
+test("ignored", t => {
+    var m = new ConfigManager();
+    m.load({
+        endpoint: "https://api.github.com/",
+        type: "user",
+        name: "myname",
+        defaultProtocol: "ssh",
+        repos: [{name: "foo", protocol: "prot", directory: "foodir"},
+                {name: "bar", directory: "bardir"}],
+        ignore: ["foo"],
+        cloned: []
     });
-    it("ignored", function() {
-        var m = new ConfigManager();
-        m.load({
-            endpoint: "https://api.github.com/",
-            type: "user",
-            name: "myname",
-            defaultProtocol: "ssh",
-            repos: [{name: "foo", protocol: "prot", directory: "foodir"},
-                    {name: "bar", directory: "bardir"}],
-            ignore: ["foo"],
-            cloned: []
-        });
-        expect(m.ignored("foo")).toBe(true);
-        expect(m.ignored("bar")).toBe(false);
+    t.is(m.ignored("foo"), true);
+    t.is(m.ignored("bar"), false);
+});
+
+test("cloned", t => {
+    var m = new ConfigManager();
+    m.load({
+        endpoint: "https://api.github.com/",
+        type: "user",
+        name: "myname",
+        defaultProtocol: "ssh",
+        repos: [],
+        ignore: [],
+        cloned: ["foo", "bar"]
     });
-    it("cloned", function() {
-        var m = new ConfigManager();
-        m.load({
-            endpoint: "https://api.github.com/",
-            type: "user",
-            name: "myname",
-            defaultProtocol: "ssh",
-            repos: [],
-            ignore: [],
-            cloned: ["foo", "bar"]
-        });
-        expect(m.cloned("foo")).toBe(true);
-        expect(m.cloned("baz")).toBe(false);
+    t.is(m.cloned("foo"), true);
+    t.is(m.cloned("baz"), false);
+});
+
+test("clonedDirectories", t => {
+    var m = new ConfigManager();
+    m.load({
+        endpoint: "https://api.github.com/",
+        type: "user",
+        name: "myname",
+        defaultProtocol: "ssh",
+        repos: [{name: "foo", protocol: "prot", directory: "foodir"},
+                {name: "bar", directory: "bardir"}],
+        ignore: [],
+        cloned: ["foo", "bar", "baz"]
     });
-    it("clonedDirectories", function() {
-        var m = new ConfigManager();
-        m.load({
-            endpoint: "https://api.github.com/",
-            type: "user",
-            name: "myname",
-            defaultProtocol: "ssh",
-            repos: [{name: "foo", protocol: "prot", directory: "foodir"},
-                    {name: "bar", directory: "bardir"}],
-            ignore: [],
-            cloned: ["foo", "bar", "baz"]
-        });
-        expect(m.clonedDirectories()).toEqual(["foodir", "bardir", "baz"]);
+    t.deepEqual(m.clonedDirectories(), ["foodir", "bardir", "baz"]);
+});
+
+test("useAccessToken - false", t => {
+    var m = new ConfigManager();
+    m.load({
+        endpoint: "https://api.github.com/",
+        type: "user",
+        name: "myname",
+        defaultProtocol: "ssh",
+        useAccessToken: false,
+        repos: [{name: "foo", protocol: "prot", directory: "foodir"},
+                {name: "bar", directory: "bardir"}],
+        ignore: [],
+        cloned: ["foo", "bar", "baz"]
     });
-    it("useAccessToken - false", function() {
-        var m = new ConfigManager();
-        m.load({
-            endpoint: "https://api.github.com/",
-            type: "user",
-            name: "myname",
-            defaultProtocol: "ssh",
-            useAccessToken: false,
-            repos: [{name: "foo", protocol: "prot", directory: "foodir"},
-                    {name: "bar", directory: "bardir"}],
-            ignore: [],
-            cloned: ["foo", "bar", "baz"]
-        });
-        process.env["GITLUMP_ACCESS_TOKEN"] = "foo";
-        expect(m.accessToken()).toBe(null);
+    process.env["GITLUMP_ACCESS_TOKEN"] = "foo";
+    t.is(m.accessToken(), null);
+});
+
+test("useAccessToken - true", t => {
+    var m = new ConfigManager();
+    m.load({
+        endpoint: "https://api.github.com/",
+        type: "user",
+        name: "myname",
+        defaultProtocol: "ssh",
+        useAccessToken: true,
+        repos: [{name: "foo", protocol: "prot", directory: "foodir"},
+                {name: "bar", directory: "bardir"}],
+        ignore: [],
+        cloned: ["foo", "bar", "baz"]
     });
-    it("useAccessToken - true", function() {
-        var m = new ConfigManager();
-        m.load({
-            endpoint: "https://api.github.com/",
-            type: "user",
-            name: "myname",
-            defaultProtocol: "ssh",
-            useAccessToken: true,
-            repos: [{name: "foo", protocol: "prot", directory: "foodir"},
-                    {name: "bar", directory: "bardir"}],
-            ignore: [],
-            cloned: ["foo", "bar", "baz"]
-        });
-        process.env["GITLUMP_ACCESS_TOKEN"] = "foo";
-        expect(m.accessToken()).toEqual("foo");
+    process.env["GITLUMP_ACCESS_TOKEN"] = "foo";
+    t.is(m.accessToken(), "foo");
+});
+
+test("useAccessToken - custom", t => {
+    var m = new ConfigManager();
+    m.load({
+        endpoint: "https://api.github.com/",
+        type: "user",
+        name: "myname",
+        defaultProtocol: "ssh",
+        useAccessToken: "MY_ACCESS_TOKEN",
+        repos: [{name: "foo", protocol: "prot", directory: "foodir"},
+                {name: "bar", directory: "bardir"}],
+        ignore: [],
+        cloned: ["foo", "bar", "baz"]
     });
-    it("useAccessToken - custom", function() {
-        var m = new ConfigManager();
-        m.load({
-            endpoint: "https://api.github.com/",
-            type: "user",
-            name: "myname",
-            defaultProtocol: "ssh",
-            useAccessToken: "MY_ACCESS_TOKEN",
-            repos: [{name: "foo", protocol: "prot", directory: "foodir"},
-                    {name: "bar", directory: "bardir"}],
-            ignore: [],
-            cloned: ["foo", "bar", "baz"]
-        });
-        process.env["MY_ACCESS_TOKEN"] = "mytoken";
-        process.env["GITLUMP_ACCESS_TOKEN"] = "foo";
-        expect(m.accessToken()).toEqual("mytoken");
-    });
+    process.env["MY_ACCESS_TOKEN"] = "mytoken";
+    process.env["GITLUMP_ACCESS_TOKEN"] = "foo";
+    t.is(m.accessToken(), "mytoken");
 });

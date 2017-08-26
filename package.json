@@ -7,9 +7,11 @@
     "gitlump": "./bin/gitlump"
   },
   "scripts": {
-    "build": "gulp",
-    "prepublish": "gulp",
-    "test": "gulp test"
+    "build": "tsc",
+    "clean": "del-cli lib",
+    "prepublish": "npm run clean && npm run build",
+    "pretest": "npm run clean && npm run build",
+    "test": "ava \"spec/**/*.js\""
   },
   "files": [
     "bin",
@@ -27,15 +29,13 @@
     "@types/async": "^1.4.22-alpha",
     "@types/colors": "^0.6.22-alpha",
     "@types/commander": "^2.3.22-alpha",
-    "@types/node": "^4.0.22-alpha",
+    "@types/node": "^8.0.22",
     "@types/promptly": "^1.1.21-alpha",
     "@types/request": "0.0.31",
-    "gulp": "^3.9.0",
-    "gulp-jasmine": "^2.1.0",
-    "gulp-shell": "^0.5.2",
-    "jasmine-reporters": "^2.0.7",
+    "ava": "^0.22.0",
+    "del-cli": "^1.1.0",
     "mkdirp": "^0.5.1",
-    "typescript": "^2.0.3"
+    "typescript": "^2.4.2"
   },
   "dependencies": {
     "async": "^1.4.2",
