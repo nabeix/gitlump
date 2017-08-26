@@ -45,7 +45,7 @@ export default class GitHubClient implements GitServiceClient {
             this.requestGet(option).then((result) => {
                 repositories = this.createRepositorytList(result.body);
                 if (result.response.statusCode === 200) {
-                    const pageUrls = result.response.headers["link"] ? this.createPageUrls(result.response.headers["link"]) : null;
+                    const pageUrls = result.response.headers["link"] ? this.createPageUrls(result.response.headers["link"] as string) : null;
                     if (pageUrls && pageUrls.length > 1 ) {
                         const nextRequests: Promise<RequestResult>[] = [];
                         // NOTE: The first url is already done in the first this.requestGet().
